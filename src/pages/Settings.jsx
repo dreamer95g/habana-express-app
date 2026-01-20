@@ -4,20 +4,46 @@ import { useQuery, useMutation } from '@apollo/client';
 import { GET_CONFIG, UPDATE_CONFIG } from '../graphql/configuration';
 import toast from 'react-hot-toast';
 import { Save, Building, Phone, Mail, DollarSign, Bot, Info, Loader2, Calendar, Clock, RefreshCw, FileText, Image as ImageIcon, UploadCloud } from 'lucide-react';
-
+import { TRIGGER_SYNC } from '../graphql/configuration';
 // --- HELPERS MEJORADOS ---
 
-// Convierte Fecha ISO a "HH:mm" local
-const extractTimeFromISO = (isoString) => {
-  if (!isoString) return '';
+const extractTimeFromISO = (rawDate) => {
+  if (!rawDate) return '';
+  
+  // 🔍 DEBUG: Mira la consola (F12) para ver qué está llegando
+  console.log("Valor recibido del Backend:", rawDate);
+
   try {
-    const date = new Date(isoString);
-    // Usamos toTimeString que devuelve "HH:mm:ss GMT...", cortamos los primeros 5
-    // Esto asegura que obtengamos la hora local del navegador
-    return date.toTimeString().slice(0, 5); 
+    // INTENTO 1: Crear objeto fecha estándar
+    // Prisma suele enviar timestamps numéricos (como strings) o ISO Strings
+    const date = new Date(Number(rawDate) || rawDate);
+
+    if (!isNaN(date.getTime())) {
+      // Si la fecha es válida, extraemos hora LOCAL
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
   } catch (e) {
-    return '';
+    console.warn("Fallo al convertir fecha standard", e);
   }
+
+  // INTENTO 2 (FALLBACK): Manipulación de Texto
+  // Si llega algo como "2024-01-01T08:00:00.000Z" o simplemente "08:00:00"
+  if (typeof rawDate === 'string') {
+     // Si tiene una 'T', cortamos después de ella
+     if (rawDate.includes('T')) {
+         const timePart = rawDate.split('T')[1];
+         // Tomamos los primeros 5 caracteres (HH:mm)
+         return timePart.substring(0, 5); 
+     }
+     // Si ya parece una hora "08:00:00", devolvemos los primeros 5
+     if (rawDate.includes(':')) {
+         return rawDate.substring(0, 5);
+     }
+  }
+
+  return '';
 };
 
 // Convierte "HH:mm" a Fecha ISO completa para guardar
@@ -36,7 +62,8 @@ export default function Settings() {
 
   const currentLogo = watch('logo_url');
   
-  // 1. Obtener datos
+
+// 1. Obtener datos
   const { data, loading, error } = useQuery(GET_CONFIG, {
     fetchPolicy: 'network-only',
     onCompleted: (data) => {
@@ -44,6 +71,7 @@ export default function Settings() {
         const config = data.systemConfiguration[0];
         setConfigId(config.id_config);
 
+        // Campos de texto simples
         setValue('company_name', config.company_name);
         setValue('company_phone', config.company_phone || '');
         setValue('company_email', config.company_email || '');
@@ -51,26 +79,39 @@ export default function Settings() {
         setValue('telegram_bot_token', config.telegram_bot_token || '');
         setValue('logo_url', config.logo_url || '');
 
+        // Campos numéricos
         setValue('seller_commission_percentage', config.seller_commission_percentage);
         setValue('default_exchange_rate', config.default_exchange_rate);
-        
-        // Asignar con fallback seguro
         setValue('monthly_report_day', config.monthly_report_day || 20);
         setValue('annual_report_day', config.annual_report_day || 20);
 
-        // Uso de la nueva función extractora
+         // 🕒 AQUI: Asegúrate que esté así:
         if (config.exchange_rate_sync_time) {
-            setValue('exchange_rate_sync_time', extractTimeFromISO(config.exchange_rate_sync_time));
+            const time = extractTimeFromISO(config.exchange_rate_sync_time);
+            setValue('exchange_rate_sync_time', time, { shouldValidate: true });
         }
         if (config.monthly_report_time) {
-            setValue('monthly_report_time', extractTimeFromISO(config.monthly_report_time));
+            const time = extractTimeFromISO(config.monthly_report_time);
+            setValue('monthly_report_time', time, { shouldValidate: true });
         }
         if (config.annual_report_time) {
-            setValue('annual_report_time', extractTimeFromISO(config.annual_report_time));
+            const time = extractTimeFromISO(config.annual_report_time);
+            setValue('annual_report_time', time, { shouldValidate: true });
         }
       }
     }
   });
+
+const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
+
+  const handleManualSync = async () => {
+      try {
+          await triggerSync();
+          toast.success("Precios actualizados con la tasa de hoy");
+      } catch (e) {
+          toast.error("Error al sincronizar");
+      }
+  };
 
   const [updateConfig, { loading: saving }] = useMutation(UPDATE_CONFIG);
 
@@ -89,7 +130,8 @@ export default function Settings() {
 
     try {
         // Asegúrate que el puerto coincida con tu backend (4000)
-        const response = await fetch('http://localhost:4000/api/upload', {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(API_URL+'/api/upload', {
             method: 'POST',
             body: formData,
         });
@@ -223,7 +265,7 @@ export default function Settings() {
                 </div>
 
                 <div className="col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Visión</label>
                     <textarea {...register('description')} rows={2} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
                 </div>
             </div>
@@ -254,6 +296,7 @@ export default function Settings() {
           </div>
         </div>
 
+
         {/* === SECCIÓN 3: AUTOMATIZACIÓN === */}
         <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center pb-2 border-b border-gray-50">
@@ -261,7 +304,7 @@ export default function Settings() {
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1 space-y-4">
+            {/* <div className="lg:col-span-1 space-y-4">
               <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
                 <RefreshCw size={16} className="mr-2" /> Sync Tasa
               </h3>
@@ -269,6 +312,31 @@ export default function Settings() {
                 <input type="time" {...register('exchange_rate_sync_time')} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none" />
                 <Clock size={16} className="absolute left-3 top-3 text-gray-400" />
               </div>
+            </div> */}
+
+             <div className="lg:col-span-1 space-y-4">
+              <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
+                <RefreshCw size={16} className="mr-2" /> Sync Tasa
+              </h3>
+              
+              <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input type="time" {...register('exchange_rate_sync_time')} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none" />
+                    <Clock size={16} className="absolute left-3 top-3 text-gray-400" />
+                  </div>
+                  
+                  {/* 👇 BOTÓN MANUAL AÑADIDO 👇 */}
+                  <button 
+                    type="button" 
+                    onClick={handleManualSync}
+                    disabled={syncing}
+                    className="bg-purple-100 hover:bg-purple-200 text-purple-700 p-2 rounded-lg transition-colors"
+                    title="Actualizar precios ahora"
+                  >
+                    <RefreshCw size={20} className={syncing ? "animate-spin" : ""} />
+                  </button>
+              </div>
+              <p className="text-[10px] text-gray-400">Hora automática o click para manual.</p>
             </div>
 
             <div className="lg:col-span-1 space-y-4 border-l border-gray-100 lg:pl-6">
@@ -292,6 +360,8 @@ export default function Settings() {
             </div>
           </div>
         </div>
+
+
 
         {/* === SECCIÓN 4: TELEGRAM === */}
         <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">

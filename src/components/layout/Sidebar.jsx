@@ -1,19 +1,27 @@
 // src/components/layout/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, ShoppingBag, Package, Users, FileText, Settings, LogOut, Truck, Flame } from 'lucide-react';
+// 1. CAMBIO: Importamos ShoppingCart y quitamos Flame
+import { LayoutDashboard, ShoppingBag, Package, Users, FileText, Settings, LogOut, Truck, ShoppingCart, Tag, RotateCcw  } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Sidebar({ isOpen, onClose, isMobile }) {
   const { user, logout } = useAuth();
 
+  // Recuerda: Aquí ya tenemos la lógica de roles configurada como pediste.
+  // Storekeeper ve: Inventario, Categorías, Envíos.
+  // Seller ve: Vender (POS).
   const menus = [
     { name: 'Inicio', path: '/', icon: LayoutDashboard, roles: ['admin', 'seller', 'storekeeper'] },
-    { name: 'Vender (POS)', path: '/pos', icon: ShoppingBag, roles: ['seller', 'admin'] },
-    { name: 'Inventario', path: '/inventory', icon: Package, roles: ['storekeeper', 'admin'] },
-    { name: 'Envíos', path: '/shipments', icon: Truck, roles: ['admin', 'storekeeper'] },
+   { name: 'Inventario', path: '/inventory', icon: Package, roles: ['storekeeper', 'admin'] },
+  { name: 'Categorías', path: '/categories', icon: Tag, roles: [ 'admin'] },
+  { name: 'Devoluciones', path: '/returns', icon: RotateCcw, roles: ['admin', 'storekeeper'] },  
+  { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller'] }, 
+  { name: 'Historial Ventas', path: '/sales', icon: FileText, roles: ['admin'] },
+    
+    { name: 'Envíos', path: '/shipments', icon: Truck, roles: ['admin'] },
     { name: 'Usuarios', path: '/users', icon: Users, roles: ['admin'] },
-    { name: 'Reportes', path: '/reports', icon: FileText, roles: ['admin'] },
+   
     { name: 'Configuración', path: '/settings', icon: Settings, roles: ['admin'] },
   ];
 
@@ -21,7 +29,6 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
 
   return (
     <>
-      {/* 1. OVERLAY (Solo Móvil) */}
       <div 
         className={clsx(
           "fixed inset-0 z-30 bg-black/50 transition-opacity lg:hidden",
@@ -30,29 +37,26 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
         onClick={onClose}
       />
 
-      {/* 2. SIDEBAR CONTAINER */}
       <aside 
         className={clsx(
           "bg-white shadow-xl h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 ease-in-out border-r border-gray-100",
-          // Posicionamiento
           isMobile ? "fixed inset-y-0 left-0 z-40 w-64 top-16" : "sticky top-16", 
-          // Ancho dinámico en Desktop
           (!isMobile && !isOpen) ? "w-0 overflow-hidden opacity-0" : "w-64 opacity-100",
-          // Transformación en Móvil
           (isMobile && !isOpen) ? "-translate-x-full" : "translate-x-0"
         )}
       >
-        {/* Header del Sidebar (Logo) */}
-        <div className="flex items-center justify-center h-20 border-b border-gray-100 flex-shrink-0">
-          <div className="h-10 w-10 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-md">
-            <Flame size={24} fill="currentColor" />
+        {/* 2. CAMBIO: Header del Sidebar con Carrito */}
+        <div className="flex items-center justify-center h-24 border-b border-gray-100 flex-shrink-0">
+          <div className="flex flex-col items-center">
+             <div className="h-12 w-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-200 mb-2">
+                <ShoppingCart size={24} />
+             </div>
+             <span className="text-lg font-bold text-gray-800 tracking-tight whitespace-nowrap leading-none">
+                Habana<span className="text-orange-500">Express</span>
+             </span>
           </div>
-          <span className="ml-3 text-lg font-bold text-gray-800 tracking-tight whitespace-nowrap">
-            Habana<span className="text-orange-500">Express</span>
-          </span>
         </div>
 
-        {/* Links */}
         <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           {allowedMenus.map((item) => (
             <NavLink
@@ -66,15 +70,9 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               )}
             >
-              {/* CORRECCIÓN: Usamos una función interna para acceder a isActive en el icono */}
               {({ isActive }) => (
                 <>
-                  <item.icon 
-                    className={clsx(
-                      "mr-3 h-5 w-5 flex-shrink-0 transition-colors", 
-                      isActive ? "text-blue-600" : "text-gray-400"
-                    )} 
-                  />
+                  <item.icon className={clsx("mr-3 h-5 w-5 flex-shrink-0 transition-colors", isActive ? "text-blue-600" : "text-gray-400")} />
                   {item.name}
                 </>
               )}
@@ -82,7 +80,6 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
           ))}
         </nav>
 
-        {/* Footer Sidebar */}
         <div className="p-4 border-t border-gray-100 flex-shrink-0">
            <button onClick={logout} className="flex items-center w-full px-4 py-2 text-sm font-medium text-red-500 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap">
              <LogOut className="mr-3 h-5 w-5" />

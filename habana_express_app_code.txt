@@ -1,0 +1,4596 @@
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\eslint.config.js
+============================================
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+])
+
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\index.html
+============================================
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>habana-express-app</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\package.json
+============================================
+{
+  "name": "habana-express-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.8.8",
+    "clsx": "^2.1.1",
+    "graphql": "^16.12.0",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.562.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.71.1",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.12.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "vite": "^7.2.4"
+  }
+}
+
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\postcss.config.js
+============================================
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\README.md
+============================================
+<div align="center">
+
+  <h1>🚀 Habana Express APP</h1>
+  <h3>Productos Internacionales al alcance de tu mano en un buen precio</h3>
+<div align="center">
+
+  <h1>🚀 Habana Express - Dashboard & POS</h1>
+  <h3>Sistema de Gestión de Inventario y Ventas para Retail en Cuba</h3>
+
+  <p>
+    <img src="https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/Vite-Fast-yellow?style=for-the-badge&logo=vite" alt="Vite" />
+    <img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind" />
+    <img src="https://img.shields.io/badge/GraphQL-Apollo-E10098?style=for-the-badge&logo=graphql" alt="GraphQL" />
+  </p>
+
+  <p>
+    <b>Frontend administrativo y operativo.</b><br>
+    Gestiona inventario global, asignaciones a vendedores en consignación,<br>
+    y punto de venta (POS) con doble moneda (CUP/USD).
+  </p>
+
+</div>
+
+<hr />
+
+## 📋 Descripción del Proyecto
+
+**Habana Express App** es la interfaz de usuario para el ecosistema comercial de Habana Express. Está diseñada para resolver la complejidad del comercio en Cuba, permitiendo la gestión de precios dinámicos basados en la tasa de cambio diaria y un control estricto del stock en manos de vendedores.
+
+### 🌟 Características Principales
+
+*   **🛒 Punto de Venta (POS):** Interfaz optimizada para vendedores. Muestra solo el stock asignado, calcula precios en tiempo real según la tasa del día y muestra la ganancia estimada (comisión) por venta.
+*   **📦 Inventario Dual:** Gestión de **Stock Global** (Almacén Central) vs **Stock Asignado** (En manos del vendedor).
+*   **👥 Gestión de Roles:**
+    *   **Admin:** Control total, reportes, gestión de usuarios, historial de ventas y configuración.
+    *   **Storekeeper (Almacenero):** Recepción de envíos, creación de productos y asignación de mercancía a vendedores.
+    *   **Seller (Vendedor):** Acceso exclusivo al POS para vender su mercancía asignada.
+*   **💱 Tasa de Cambio Dinámica:** Sincronización automática o manual de la tasa del dólar, actualizando precios de venta masivamente.
+*   **📉 Gestión de Devoluciones:** Flujo para retornar mercancía del vendedor al almacén principal.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+Este proyecto fue construido con las mejores prácticas de desarrollo moderno:
+
+*   **Core:** React 18 + Vite (Build Tool).
+*   **Estilos:** TailwindCSS (Utility-first CSS).
+*   **Estado & Datos:** Apollo Client (Gestión de Estado y Caching de GraphQL).
+*   **Formularios:** React Hook Form (Validación y performance).
+*   **Rutas:** React Router DOM v6.
+*   **UI Components:** Lucide React (Iconografía), React Hot Toast (Notificaciones).
+
+---
+
+## 🚀 Instalación y Puesta en Marcha
+
+Sigue estos pasos para levantar el proyecto en tu entorno local.
+
+### Prerrequisitos
+*   Node.js (v18 o superior recomendado).
+*   Tener el **Backend (API)** corriendo en el puerto `4000`.
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tu-usuario/habana-express-app.git
+cd habana-express-app
+
+2. Instalar dependencias
+
+npm install
+
+3. Configuración de Entorno
+Crea un archivo .env en la raíz del proyecto (si no existe) y configura la URL de la API:
+VITE_API_URL=http://localhost:4000
+
+4. Ejecutar en Desarrollo
+
+npm run dev
+
+📂 Estructura del Proyecto
+src/
+├── components/        # Componentes reutilizables
+│   ├── layout/        # Navbar, Sidebar, Layout principal
+│   ├── products/      # Tarjetas, Modales de Edición/Asignación
+│   ├── sales/         # Modales de Ventas
+│   ├── ui/            # Elementos genéricos (ImageDropzone, etc.)
+│   └── users/         # Gestión de usuarios
+├── context/           # Contexto global (AuthContext)
+├── graphql/           # Definiciones de Queries y Mutations
+├── pages/             # Vistas principales (Rutas)
+│   ├── Dashboard.jsx  # Panel de resumen
+│   ├── Inventory.jsx  # Gestión de productos
+│   ├── POS.jsx        # Punto de Venta (Vendedores)
+│   ├── Sales.jsx      # Historial de Ventas (Admin)
+│   └── ...
+├── client.js          # Configuración de Apollo Client
+├── main.jsx           # Punto de entrada
+└── App.jsx            # Configuración de Rutas
+
+
+🔐 Flujo de Trabajo (Lógica de Negocio)
+1. Ciclo de Inventario
+Storekeeper crea un producto -> Stock entra al Almacén Global.
+Storekeeper asigna 5 unidades al Vendedor A.
+Stock Global: No cambia (es el total físico).
+Stock Vendedor A: Aumenta a 5.
+Vendedor A vende 1 unidad desde el POS.
+Stock Global: Disminuye en 1.
+Stock Vendedor A: Disminuye en 1.
+2. Ciclo de Precios
+El precio base se define en USD (Costo).
+El sistema calcula el precio de venta en CUP usando la fórmula: Costo * 2 * Tasa_Diaria.
+Si la tasa cambia en Configuración, todos los precios en CUP se actualizan al instante en el POS.
+🤝 Contribución
+Las Pull Requests son bienvenidas. Para cambios importantes, por favor abre primero un issue para discutir lo que te gustaría cambiar.
+
+<div align="center">
+<small>Desarrollado para <b>Habana Express Store</b> © 2026</small>
+</div>
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\tailwind.config.js
+============================================
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          500: '#0ea5e9',
+          600: '#0284c7', // Azul Habana Principal
+          700: '#0369a1',
+          800: '#075985', // Azul Oscuro (Textos / Navbar)
+          900: '#0c4a6e',
+        },
+        secondary: {
+          400: '#fbbf24',
+          500: '#f59e0b', // Dorado Acento (Botones de acción)
+          600: '#d97706',
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      }
+    },
+  },
+  plugins: [],
+}
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\vite.config.js
+============================================
+// import { defineConfig } from 'vite'
+// import react from '@vitejs/plugin-react'
+
+// // https://vite.dev/config/
+// export default defineConfig({
+//   plugins: [react()],
+// })
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  optimizeDeps: {
+    include: ['@apollo/client', 'graphql'] // 👈 Agrega esto para forzar la inclusión
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true, // 👈 Ayuda con librerías mixtas como Apollo
+    },
+  },
+})
+
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\App.css
+============================================
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\App.jsx
+============================================
+// src/App.jsx
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { useAuth } from './context/AuthContext';
+import { Loader2 } from 'lucide-react';
+
+// Importación de Componentes y Páginas
+import Layout from './components/layout/Layout';
+import Login from './pages/Login';
+import Settings from './pages/Settings';
+import Categories from './pages/Categories';
+import Users from './pages/Users';
+import Shipments from './pages/Shipments';
+import Dashboard from './pages/Dashboard';
+import Inventory from './pages/Inventory';
+import Returns from './pages/Returns';
+
+// 👇 1. IMPORTAR LAS NUEVAS PÁGINAS
+import POS from './pages/POS';
+import Sales from './pages/Sales';
+
+// --- COMPONENTE DE PROTECCIÓN DE RUTAS ---
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="animate-spin text-blue-600 h-10 w-10" />
+      </div>
+    );
+  }
+  
+  return user ? children : <Navigate to="/login" replace />;
+};
+
+// --- APP PRINCIPAL ---
+function App() {
+  return (
+    <>
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+      
+      <Routes>
+        {/* Ruta Pública */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Rutas Privadas */}
+        <Route 
+          path="/" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        <Route 
+          path="/inventory" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Inventory />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        {/* 👇 2. RUTA PARA VENDER (POS) */}
+        <Route 
+          path="/pos" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <POS />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        {/* 👇 3. RUTA PARA HISTORIAL DE VENTAS (ADMIN) */}
+        <Route 
+          path="/sales" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Sales />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        <Route 
+          path="/settings" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Settings />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        <Route 
+          path="/categories" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Categories />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        <Route 
+          path="/users" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Users />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        <Route 
+          path="/shipments" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Shipments />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+         <Route 
+          path="/returns" 
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Returns />
+              </Layout>
+            </PrivateRoute>
+          } 
+        />
+
+        {/* Ruta por defecto */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\client.js
+============================================
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
+// 1. Configuración del enlace HTTP (Tu Backend)
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
+
+// 2. Middleware de Autenticación
+const authLink = setContext((_, { headers }) => {
+  // Obtener el token del almacenamiento local de manera segura
+  const token = localStorage.getItem('token');
+  
+  // Retornar los headers con el token adjunto si existe
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
+  };
+});
+
+// 3. Inicialización del Cliente
+export const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'network-only', // Evita caché agresiva en desarrollo
+    },
+  },
+});.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\index.css
+============================================
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: Fuente Inter desde Google Fonts en index.html si quieres */
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\main.jsx
+============================================
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { ApolloProvider } from '@apollo/client';
+import { AuthProvider } from './context/AuthContext';
+import { client } from './client';
+import App from './App';
+import './index.css';
+
+// Verificación de seguridad para evitar "Target container is not a DOM element"
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('No se encontró el elemento root en el HTML');
+}
+
+ReactDOM.createRoot(rootElement).render(
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </ApolloProvider>
+  </React.StrictMode>
+);.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\categories\CategoryModal.jsx
+============================================
+// src/components/categories/CategoryModal.jsx
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { X, Save, Loader2 } from 'lucide-react';
+
+export default function CategoryModal({ isOpen, onClose, categoryToEdit, onSave, isSaving }) {
+  const { register, handleSubmit, reset, setValue } = useForm();
+
+  // Efecto: Cuando abre el modal, decidimos si es "Crear" (limpiar) o "Editar" (llenar)
+  useEffect(() => {
+    if (isOpen) {
+      if (categoryToEdit) {
+        setValue('name', categoryToEdit.name);
+      } else {
+        reset();
+      }
+    }
+  }, [isOpen, categoryToEdit, setValue, reset]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+        
+        {/* Header */}
+        <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-b border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800">
+            {categoryToEdit ? 'Editar Categoría' : 'Nueva Categoría'}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Formulario */}
+        <form onSubmit={handleSubmit(onSave)} className="p-6">
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre de la Categoría</label>
+            <input
+              {...register('name', { required: true })}
+              placeholder="Ej: Electrónica, Hogar..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              autoFocus
+            />
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all disabled:opacity-70"
+            >
+              {isSaving ? <Loader2 className="animate-spin h-5 w-5" /> : <Save className="h-5 w-5 mr-2" />}
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\layout\Layout.jsx
+============================================
+// src/components/layout/Layout.jsx
+import { useState, useEffect } from 'react';
+import Navbar from './Navbar';
+import Sidebar from './Sidebar';
+
+export default function Layout({ children }) {
+  // Estado inicial: Abierto en pantallas grandes, Cerrado en pequeñas
+  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  // Detectar cambio de tamaño de pantalla
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile && !isSidebarOpen) setSidebarOpen(true); // Opcional: Auto abrir al agrandar
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden">
+      
+      {/* 1. Navbar Fijo Arriba */}
+      <Navbar onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
+
+      {/* 2. Contenedor Inferior (Sidebar + Contenido) */}
+      <div className="flex flex-1 overflow-hidden">
+        
+        {/* Sidebar */}
+        <Sidebar 
+          isOpen={isSidebarOpen} 
+          onClose={() => setSidebarOpen(false)} 
+          isMobile={isMobile}
+        />
+
+        {/* Área Principal de Contenido */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-8 transition-all duration-300">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\layout\Navbar.jsx
+============================================
+// src/components/layout/Navbar.jsx
+import { useState, useRef, useEffect } from 'react';
+import { Menu, User, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import clsx from 'clsx';
+
+import { useMutation } from '@apollo/client';
+import { UPDATE_USER } from '../../graphql/users';
+import UserModal from '../users/UserModal';
+import toast from 'react-hot-toast';
+
+
+export default function Navbar({ onMenuClick }) {
+  const { user, logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+   const [updateUser, { loading: updating }] = useMutation(UPDATE_USER);
+
+
+    const handleSelfUpdate = async (data) => {
+    try {
+        const input = {
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            photo_url: data.photo_url,
+            telegram_chat_id: data.telegram_chat_id,
+            // NO enviamos rol
+        };
+        if (data.password) input.password = data.password;
+
+        const res = await updateUser({
+            variables: { id_user: user.id_user, input }
+        });
+
+        // IMPORTANTE: Actualizar el contexto de Auth para que se refresque la foto/nombre en el Navbar
+        // Aquí asumimos que updateAuth es una función que agregaremos al contexto, 
+        // O simplemente forzamos un reload o actualizamos el localStorage manualmente.
+        // Por simplicidad ahora:
+        const updatedUser = { ...user, ...res.data.updateUser };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload(); // Recarga rápida para aplicar cambios en toda la app
+        
+        toast.success('Perfil actualizado');
+        setIsProfileModalOpen(false);
+    } catch (e) {
+        toast.error(e.message);
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <header className="bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md h-16 flex items-center justify-between px-4 z-20 sticky top-0">
+      
+      {/* IZQUIERDA: Botón Hamburguesa (Visible SIEMPRE ahora) */}
+      <div className="flex items-center">
+        <button 
+          onClick={onMenuClick}
+          className="p-2 rounded-lg text-white hover:bg-white/20 focus:outline-none transition-colors"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        
+        {/* Título (Opcional, ya que tenemos logo en sidebar) */}
+        {/* <h1 className="ml-4 text-xl font-bold text-white tracking-wide hidden md:block">
+          
+        </h1> */}
+      </div>
+
+      {/* DERECHA: Perfil de Usuario */}
+      <div className="ml-auto relative" ref={dropdownRef}>
+        <button 
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="flex items-center space-x-3 focus:outline-none group"
+        >
+            <div className="text-right hidden md:block">
+                <p className="text-sm font-semibold text-white group-hover:text-blue-100 transition">{user?.name}</p>
+                <p className="text-xs text-blue-200 capitalize">{user?.role}</p>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center overflow-hidden shadow-sm">
+                {user?.photo_url ? (
+                    <img src={user.photo_url} alt="User" className="h-full w-full object-cover" />
+                ) : (
+                    <User className="text-white h-6 w-6" />
+                )}
+            </div>
+            <ChevronDown className="h-4 w-4 text-blue-200" />
+        </button>
+
+        {/* Dropdown Menu */}
+        <div className={clsx(
+            "absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl py-2 transform transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5 z-50",
+            isDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+        )}>
+            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <p className="text-xs text-gray-500 uppercase font-semibold">Cuenta</p>
+                {/* <p className="text-sm font-bold text-gray-900 truncate mt-1">{user?.phone}</p> */}
+                <p className="text-sm font-bold text-gray-900 truncate mt-1">
+                    {user?.phone || 'Sin teléfono'}
+                </p>
+            </div>
+
+            <div className="py-1">
+              {/* Botón Editar Perfil */}
+              <button 
+                onClick={() => {
+                    setIsDropdownOpen(false); // Cerrar dropdown
+                    setIsProfileModalOpen(true); // Abrir modal
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              >
+                  Editar Perfil
+              </button>
+              
+              <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                  Salir del sistema
+              </button>
+            </div>
+            
+            {/* <div className="py-1">
+              <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                  Salir del sistema
+              </button>
+            </div> */}
+        </div>
+      </div>
+
+       <UserModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        userToEdit={user} // Pasamos el usuario actual del AuthContext
+        onSave={handleSelfUpdate}
+        isSaving={updating}
+        isSelfEdit={true} // Activa el modo "Mi Perfil"
+        isAdmin={user?.role === 'admin'} // Solo para saber si puede ver roles (aunque selfEdit lo deshabilita)
+      />
+    </header>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\layout\Sidebar.jsx
+============================================
+// src/components/layout/Sidebar.jsx
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+// 1. CAMBIO: Importamos ShoppingCart y quitamos Flame
+import { LayoutDashboard, ShoppingBag, Package, Users, FileText, Settings, LogOut, Truck, ShoppingCart, Tag, RotateCcw  } from 'lucide-react';
+import clsx from 'clsx';
+
+export default function Sidebar({ isOpen, onClose, isMobile }) {
+  const { user, logout } = useAuth();
+
+  // Recuerda: Aquí ya tenemos la lógica de roles configurada como pediste.
+  // Storekeeper ve: Inventario, Categorías, Envíos.
+  // Seller ve: Vender (POS).
+  const menus = [
+    { name: 'Inicio', path: '/', icon: LayoutDashboard, roles: ['admin', 'seller', 'storekeeper'] },
+    // { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller', 'admin'] },
+   // 👈 CAMBIO: "Vender" (POS) SOLO para Sellers
+    { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller'] }, 
+    
+    // 👈 CAMBIO: "Historial Ventas" SOLO para Admin 
+    { name: 'Historial Ventas', path: '/sales', icon: FileText, roles: ['admin'] },
+   
+    { name: 'Inventario', path: '/inventory', icon: Package, roles: ['storekeeper', 'admin'] },
+    { name: 'Categorías', path: '/categories', icon: Tag, roles: [ 'admin'] },
+    { name: 'Envíos', path: '/shipments', icon: Truck, roles: ['admin'] },
+    { name: 'Usuarios', path: '/users', icon: Users, roles: ['admin'] },
+   { name: 'Devoluciones', path: '/returns', icon: RotateCcw, roles: ['admin', 'storekeeper'] },
+    { name: 'Configuración', path: '/settings', icon: Settings, roles: ['admin'] },
+  ];
+
+  const allowedMenus = menus.filter(item => item.roles.includes(user?.role));
+
+  return (
+    <>
+      <div 
+        className={clsx(
+          "fixed inset-0 z-30 bg-black/50 transition-opacity lg:hidden",
+          (isOpen && isMobile) ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={onClose}
+      />
+
+      <aside 
+        className={clsx(
+          "bg-white shadow-xl h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 ease-in-out border-r border-gray-100",
+          isMobile ? "fixed inset-y-0 left-0 z-40 w-64 top-16" : "sticky top-16", 
+          (!isMobile && !isOpen) ? "w-0 overflow-hidden opacity-0" : "w-64 opacity-100",
+          (isMobile && !isOpen) ? "-translate-x-full" : "translate-x-0"
+        )}
+      >
+        {/* 2. CAMBIO: Header del Sidebar con Carrito */}
+        <div className="flex items-center justify-center h-24 border-b border-gray-100 flex-shrink-0">
+          <div className="flex flex-col items-center">
+             <div className="h-12 w-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-200 mb-2">
+                <ShoppingCart size={24} />
+             </div>
+             <span className="text-lg font-bold text-gray-800 tracking-tight whitespace-nowrap leading-none">
+                Habana<span className="text-orange-500">Express</span>
+             </span>
+          </div>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+          {allowedMenus.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => isMobile && onClose()}
+              className={({ isActive }) => clsx(
+                "flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap",
+                isActive 
+                  ? "bg-blue-50 text-blue-600 shadow-sm" 
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon className={clsx("mr-3 h-5 w-5 flex-shrink-0 transition-colors", isActive ? "text-blue-600" : "text-gray-400")} />
+                  {item.name}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-gray-100 flex-shrink-0">
+           <button onClick={logout} className="flex items-center w-full px-4 py-2 text-sm font-medium text-red-500 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap">
+             <LogOut className="mr-3 h-5 w-5" />
+             Cerrar Sesión
+           </button>
+        </div>
+      </aside>
+    </>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\products\AssignmentModal.jsx
+============================================
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useQuery } from '@apollo/client';
+import { GET_USERS } from '../../graphql/users'; // Asegúrate que esta query traiga users
+import { X, Save, Loader2, UserPlus, Package } from 'lucide-react';
+
+export default function AssignmentModal({ isOpen, onClose, product, onAssign, isAssigning }) {
+  const { register, handleSubmit, reset, watch, setValue } = useForm();
+  
+  // 1. Traemos usuarios para llenar el select (Solo vendedores activos)
+  const { data: usersData, loading: loadingUsers } = useQuery(GET_USERS);
+  
+  // Filtramos solo los que son vendedores (role: 'seller') y están activos
+  const sellers = usersData?.users?.filter(u => u.role === 'seller' && u.active) || [];
+
+  useEffect(() => {
+    if (isOpen) {
+      reset({ quantity: 1 }); // Resetear form al abrir
+    }
+  }, [isOpen, product, reset]);
+
+  if (!isOpen || !product) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-200">
+        
+        {/* Header */}
+        <div className="bg-blue-600 px-6 py-4 flex justify-between items-center border-b border-blue-500 rounded-t-2xl">
+          <h3 className="text-lg font-bold text-white flex items-center">
+            <UserPlus className="mr-2 h-5 w-5" />
+            Asignar Mercancía
+          </h3>
+          <button onClick={onClose} className="text-blue-100 hover:text-white transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Info del Producto */}
+        <div className="bg-blue-50 px-6 py-3 border-b border-blue-100 flex items-center gap-3">
+             <div className="h-10 w-10 bg-white rounded-lg border border-blue-100 flex items-center justify-center overflow-hidden">
+                {product.photo_url ? (
+                    <img src={product.photo_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                    <Package className="text-blue-300" size={20} />
+                )}
+             </div>
+             <div>
+                 <p className="font-bold text-gray-800 text-sm">{product.name}</p>
+                 <p className="text-xs text-gray-500">Stock Global Disponible: <span className="font-bold text-blue-600">{product.stock}</span></p>
+             </div>
+        </div>
+
+        <form onSubmit={handleSubmit(onAssign)} className="p-6 space-y-5">
+          
+          {/* Selector de Vendedor */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Seleccionar Vendedor</label>
+            {loadingUsers ? (
+                <div className="text-sm text-gray-400 flex items-center"><Loader2 className="animate-spin h-4 w-4 mr-2"/> Cargando vendedores...</div>
+            ) : (
+                <select 
+                    {...register('sellerId', { required: true })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                    <option value="">-- Elige un vendedor --</option>
+                    {sellers.map(seller => (
+                        <option key={seller.id_user} value={seller.id_user}>
+                            {seller.name} ({seller.phone})
+                        </option>
+                    ))}
+                </select>
+            )}
+          </div>
+
+          {/* Cantidad */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Cantidad a Entregar</label>
+            <div className="flex items-center gap-3">
+                <input 
+                    type="number" 
+                    min="1"
+                    max={product.stock} // Opcional: limitar al stock global
+                    {...register('quantity', { required: true, min: 1 })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-bold"
+                />
+                <span className="text-sm text-gray-400 font-medium">unidades</span>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">
+                ⚠️ Esto sumará al stock que ya tenga este vendedor.
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isAssigning}
+              className="flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all disabled:opacity-70"
+            >
+              {isAssigning ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
+              Confirmar Asignación
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\products\ProductCard.jsx
+============================================
+// src/components/products/ProductCard.jsx
+import { Edit2, Package, Power, Trash2, UserPlus  } from 'lucide-react'; // Agregamos Trash2
+import clsx from 'clsx';
+
+export default function ProductCard({ product, onEdit, onDelete, onReactivate, onAssign, isInactiveView }) {
+  
+  // Procesamos categorías para mostrarlas
+  const categories = product.product_categories?.map(pc => pc.category.name) || [];
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full group">
+      
+      {/* 1. IMAGEN */}
+      <div className="relative h-48 w-full bg-gray-50 overflow-hidden">
+        {product.photo_url ? (
+          <img 
+            src={product.photo_url} 
+            alt={product.name} 
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-300">
+            <Package size={48} />
+          </div>
+        )}
+
+        {/* Badge Garantía Flotante (Si tiene) */}
+        {product.warranty && (
+            <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm z-10">
+              GARANTÍA
+            </div>
+        )}
+      </div>
+
+      {/* 2. CONTENIDO */}
+      <div className="p-4 flex-1 flex flex-col">
+        
+        {/* Título */}
+        <h3 className="font-bold text-gray-800 text-lg leading-tight line-clamp-2 mb-1" title={product.name}>
+             {product.name}
+        </h3>
+
+        {/* Categorías (Debajo del nombre) */}
+        <div className="flex flex-wrap gap-1 mb-3">
+          {categories.length > 0 ? (
+            categories.map((cat, idx) => (
+              <span key={idx} className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                {cat}
+              </span>
+            ))
+          ) : (
+            <span className="text-[10px] text-gray-400 italic">Sin categoría</span>
+          )}
+        </div>
+
+        <div className="mt-auto space-y-3">
+            {/* Precios */}
+            <div className="flex justify-between items-end border-t border-gray-50 pt-3">
+               <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Costo (USD)</span>
+                  <span className="text-xl font-bold text-gray-500">${product.purchase_price}</span>
+               </div>
+               <div className="flex flex-col items-end">
+                  {/* CAMBIO: Especificamos CUP explícitamente */}
+                  <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Venta (CUP)</span>
+                  <span className="text-xl font-bold text-blue-600">${product.sale_price}</span>
+               </div>
+            </div>
+
+            {/* Stock y Acciones */}
+            <div className="flex items-center justify-between pt-2">
+                
+                {/* Stock */}
+                <div className={clsx(
+                    "flex items-center px-2 py-1 rounded-lg text-xs font-bold",
+                    product.stock === 0 ? "bg-red-100 text-red-700" :
+                    product.stock < 3 ? "bg-orange-100 text-orange-700" :
+                    "bg-green-100 text-green-700"
+                )}>
+                    <Package size={14} className="mr-1.5" />
+                    {product.stock === 0 ? "Agotado" : `${product.stock} Stock`}
+                </div>
+
+                {/* Botones de Acción */}
+                <div className="flex gap-2">
+                   {isInactiveView ? (
+                      <button 
+                        onClick={() => onReactivate(product)}
+                        className="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-xl transition-colors"
+                        title="Reactivar y poner stock en 1"
+                      >
+                         <Power size={18} />
+                      </button>
+                   ) : (
+                      <>
+
+{/* 🆕 BOTÓN ASIGNAR (Solo si onAssign existe, es decir, Storekeeper/Admin) */}
+                        {onAssign && (
+                            <button 
+                                onClick={() => onAssign(product)}
+                                className="p-2 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-xl transition-colors"
+                                title="Asignar a Vendedor"
+                            >
+                                <UserPlus size={18} />
+                            </button>
+                        )}
+
+                        <button 
+                            onClick={() => onEdit(product)}
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors"
+                            title="Editar"
+                        >
+                            <Edit2 size={18} />
+                        </button>
+                        {/* Botón Borrado Lógico */}
+                        <button 
+                            onClick={() => onDelete(product)}
+                            className="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl transition-colors"
+                            title="Enviar a Papelera"
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                      </>
+                   )}
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\products\ProductModal.jsx
+============================================
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { X, Save, Loader2, ShieldCheck, FileText, Truck } from 'lucide-react'; 
+import ImageDropzone from '../ui/ImageDropzone';
+
+export default function ProductModal({ isOpen, onClose, productToEdit, categories, onSave, isSaving }) {
+  // 1️⃣ CHANGE: Añadimos defaultValues al useForm para evitar problemas de undefined
+  const { register, handleSubmit, reset, control, setValue, watch } = useForm({
+     defaultValues: {
+         name: '',
+         description: '',
+         stock: 1,
+         purchase_price: 0,
+         sale_price: 0,
+         categoryIds: []
+     }
+  });
+
+  // 2️⃣ CHANGE: Efecto de carga corregido
+  useEffect(() => {
+    if (isOpen) {
+      if (productToEdit) {
+        // Mapeo de categorías seguro: Extraer IDs y convertirlos a string para el select multiple
+        const catIds = productToEdit.product_categories?.map(pc => String(pc.category.id_category)) || [];
+        
+        // Usamos reset con TODOS los valores para asegurar que el formulario se llene de golpe
+        reset({
+            name: productToEdit.name,
+            description: productToEdit.description || '', // 🔥 Arregla descripción vacía
+            sku: productToEdit.sku || '',
+            supplier_name: productToEdit.supplier_name || '',
+            purchase_price: productToEdit.purchase_price,
+            sale_price: productToEdit.sale_price,
+            stock: productToEdit.stock,
+            photo_url: productToEdit.photo_url || '',
+            warranty: productToEdit.warranty,
+            categoryIds: catIds // 🔥 Arregla categorías seleccionadas
+        });
+      } else {
+        reset({ stock: 1, warranty: false, supplier_name: '', description: '', categoryIds: [] });
+      }
+    }
+  }, [isOpen, productToEdit, reset]);
+
+ const handleFormSubmit = (data) => {
+      // Conversión segura: Si viene vacío o inválido, ponemos 0
+      const cleanData = {
+          ...data,
+          stock: data.stock ? parseInt(data.stock) : 0,
+          purchase_price: data.purchase_price ? parseFloat(data.purchase_price) : 0,
+          sale_price: data.sale_price ? parseFloat(data.sale_price) : 0,
+          // Asegurar que categoryIds es un array de números
+          categoryIds: (data.categoryIds && Array.isArray(data.categoryIds))
+              ? data.categoryIds.map(id => parseInt(id)) 
+              : []
+      };
+      
+      console.log("Datos enviados al padre:", cleanData); // Para depurar en consola (F12)
+      onSave(cleanData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl my-8 flex flex-col max-h-[90vh]">
+        
+        {/* Header ... */}
+        <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-b border-gray-100 rounded-t-2xl flex-shrink-0">
+          <h3 className="text-lg font-bold text-gray-800">
+            {productToEdit ? 'Editar Producto' : 'Nuevo Producto'}
+          </h3>
+          <button onClick={onClose}><X size={20} className="text-gray-400 hover:text-gray-600" /></button>
+        </div>
+
+        {/* Formulario ... */}
+        <div className="overflow-y-auto p-6">
+            <form id="product-form" onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+            
+            <div className="flex flex-col md:flex-row gap-6">
+                
+                {/* Lado Izquierdo... */}
+                <div className="md:w-1/3 flex flex-col space-y-4">
+                     {/* ... ImageDropzone ... */}
+                     <div className="flex flex-col items-center p-4 border border-gray-100 rounded-2xl bg-gray-50/50">
+                        <label className="text-sm font-semibold text-gray-700 mb-3">Foto del Producto</label>
+                        <Controller
+                            control={control}
+                            name="photo_url"
+                            render={({ field: { value, onChange } }) => (
+                                <ImageDropzone value={value} onChange={onChange} className="w-40 h-40 rounded-2xl shadow-sm" />
+                            )}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Categorías</label>
+                        <select 
+                            {...register('categoryIds')} 
+                            multiple 
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none h-32 text-sm"
+                        >
+                            {categories.map(cat => (
+                                // IMPORTANTE: value debe coincidir con el tipo que seteamos en reset (String)
+                                <option key={cat.id_category} value={String(cat.id_category)}>{cat.name}</option>
+                            ))}
+                        </select>
+                        <p className="text-[10px] text-gray-400 mt-1 text-center">Mantén Ctrl para seleccionar varias</p>
+                    </div>
+                </div>
+
+                {/* Lado Derecho ... */}
+                <div className="md:w-2/3 space-y-4">
+                    {/* ... Inputs Nombre, Proveedor, Stock, Precios ... */}
+                    {/* (El resto de inputs se mantienen igual, el reset() ya los maneja bien) */}
+                    
+                     {/* Nombre */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre del Producto *</label>
+                        <input {...register('name', { required: true })} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: iPhone 15 Pro Max" />
+                    </div>
+
+                    {/* Proveedor y Stock */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                             <label className="block text-sm font-semibold text-gray-700 mb-1">Proveedor</label>
+                             <div className="relative">
+                                <Truck size={16} className="absolute left-3 top-2.5 text-gray-400"/>
+                                <input {...register('supplier_name')} className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: Amazon" />
+                             </div>
+                        </div>
+                        <div>
+                             <label className="block text-sm font-semibold text-gray-700 mb-1">Stock Inicial *</label>
+                             <input type="number" {...register('stock', { required: true })} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                    </div>
+
+                    {/* Precios */}
+                    <div className="grid grid-cols-2 gap-4 bg-blue-50/30 p-4 rounded-xl border border-blue-100">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Costo (USD) *</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-2 text-gray-500 font-bold">$</span>
+                                <input type="number" step="0.01" {...register('purchase_price', { required: true })} className="w-full pl-6 pr-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-gray-700" placeholder="0.00" />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-blue-500 uppercase mb-1">Venta (CUP) *</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-2 text-blue-500 font-bold">$</span>
+                                <input type="number" step="0.01" {...register('sale_price', { required: true })} className="w-full pl-6 pr-3 py-2 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-blue-700" placeholder="0.00" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Descripción (Asegúrate que el textarea está bien registrado) */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+                        <div className="relative">
+                            <FileText size={16} className="absolute left-3 top-3 text-gray-400" />
+                            <textarea 
+                                {...register('description')} 
+                                rows={3} 
+                                className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none" 
+                                placeholder="Detalles técnicos, estado, etc..."
+                            />
+                        </div>
+                    </div>
+
+                     {/* Checkbox Garantía */}
+                    <div className="flex items-center space-x-2">
+                        <input type="checkbox" id="warranty" {...register('warranty')} className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300" />
+                        <label htmlFor="warranty" className="text-sm font-medium text-gray-700 flex items-center cursor-pointer select-none">
+                            <ShieldCheck size={16} className="mr-1 text-green-600" /> Este producto incluye garantía
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+            </form>
+        </div>
+
+        {/* Footer ... */}
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3 rounded-b-2xl flex-shrink-0">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
+            <button form="product-form" type="submit" disabled={isSaving} className="flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md disabled:opacity-70 transition-transform active:scale-95">
+              {isSaving ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
+              Guardar
+            </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\sales\SaleModal.jsx
+============================================
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { X, Save, Loader2, DollarSign, Phone, FileText } from 'lucide-react';
+
+export default function SaleModal({ isOpen, onClose, saleToEdit, onSave, isSaving }) {
+  const { register, handleSubmit, setValue } = useForm();
+
+  useEffect(() => {
+    if (isOpen && saleToEdit) {
+      setValue('total_cup', saleToEdit.total_cup);
+      setValue('exchange_rate', saleToEdit.exchange_rate);
+      setValue('buyer_phone', saleToEdit.buyer_phone);
+      setValue('payment_method', saleToEdit.payment_method);
+      setValue('notes', saleToEdit.notes || '');
+    }
+  }, [isOpen, saleToEdit, setValue]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in fade-in zoom-in">
+        <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-b rounded-t-2xl">
+          <h3 className="font-bold text-gray-800">Editar Venta #{saleToEdit?.id_sale}</h3>
+          <button onClick={onClose}><X className="text-gray-400 hover:text-gray-600" /></button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSave)} className="p-6 space-y-4">
+          
+          <div className="p-3 bg-blue-50 rounded-lg text-sm text-blue-800 mb-4">
+             <span className="font-bold">Vendedor:</span> {saleToEdit?.seller?.name}
+             <br/>
+             <span className="text-xs opacity-75">Nota: No se puede cambiar el vendedor ni los productos. Para eso, anula la venta.</span>
+          </div>
+
+          <div>
+             <label className="text-sm font-bold text-gray-700">Total (CUP)</label>
+             <div className="relative">
+                <DollarSign className="absolute left-3 top-2.5 text-gray-400 h-4 w-4"/>
+                <input type="number" step="0.01" {...register('total_cup')} className="w-full pl-9 p-2 border rounded-lg" />
+             </div>
+          </div>
+
+          <div>
+             <label className="text-sm font-bold text-gray-700">Teléfono Cliente</label>
+             <div className="relative">
+                <Phone className="absolute left-3 top-2.5 text-gray-400 h-4 w-4"/>
+                <input {...register('buyer_phone')} className="w-full pl-9 p-2 border rounded-lg" />
+             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+              <div>
+                  <label className="text-sm font-bold text-gray-700">Método Pago</label>
+                  <select {...register('payment_method')} className="w-full p-2 border rounded-lg">
+                      <option value="cash">Efectivo</option>
+                      <option value="transfer">Transferencia</option>
+                  </select>
+              </div>
+              <div>
+                  <label className="text-sm font-bold text-gray-700">Tasa Aplicada</label>
+                  <input type="number" {...register('exchange_rate')} className="w-full p-2 border rounded-lg" />
+              </div>
+          </div>
+
+          <div>
+             <label className="text-sm font-bold text-gray-700">Notas</label>
+             <div className="relative">
+                <FileText className="absolute left-3 top-3 text-gray-400 h-4 w-4"/>
+                <textarea {...register('notes')} rows={2} className="w-full pl-9 p-2 border rounded-lg resize-none" />
+             </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+             <button type="submit" disabled={isSaving} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center">
+                 {isSaving && <Loader2 className="animate-spin mr-2 h-4 w-4"/>} Guardar
+             </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\shipments\ShipmentModal.jsx
+============================================
+// src/components/shipments/ShipmentModal.jsx
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { X, Save, Loader2, Truck, Calendar, DollarSign, FileText } from 'lucide-react';
+
+
+
+// Helper ROBUSTO para fechas
+const formatDateForInput = (rawDate) => {
+  if (!rawDate) return '';
+  try {
+    // Intentamos convertir a número primero (por si viene como timestamp string "167234234")
+    // Si no, usamos el valor original (ISO string)
+    const date = new Date(Number(rawDate) || rawDate);
+    
+    // Si la fecha es inválida, devolvemos vacío para no romper la app
+    if (isNaN(date.getTime())) return '';
+    
+    return date.toISOString().split('T')[0];
+  } catch (e) {
+    return '';
+  }
+};
+
+export default function ShipmentModal({ isOpen, onClose, shipmentToEdit, onSave, isSaving }) {
+  const { register, handleSubmit, reset, setValue } = useForm();
+
+  useEffect(() => {
+    if (isOpen) {
+      if (shipmentToEdit) {
+        // Llenar datos
+        setValue('agency_name', shipmentToEdit.agency_name);
+        setValue('shipment_date', formatDateForInput(shipmentToEdit.shipment_date));
+        setValue('shipping_cost_usd', shipmentToEdit.shipping_cost_usd);
+        setValue('merchandise_cost_usd', shipmentToEdit.merchandise_cost_usd);
+        setValue('customs_fee_cup', shipmentToEdit.customs_fee_cup);
+        setValue('exchange_rate', shipmentToEdit.exchange_rate);
+        setValue('notes', shipmentToEdit.notes || '');
+      } else {
+        // Limpiar
+        reset();
+      }
+    }
+  }, [isOpen, shipmentToEdit, setValue, reset]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-in fade-in zoom-in duration-200">
+        
+        {/* Header */}
+        <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-b border-gray-100 rounded-t-2xl">
+          <h3 className="text-lg font-bold text-gray-800 flex items-center">
+            <Truck className="mr-2 text-blue-600" />
+            {shipmentToEdit ? 'Editar Envío' : 'Registrar Nuevo Envío'}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSave)} className="p-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Agencia */}
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Agencia de Envíos</label>
+              <input {...register('agency_name', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: Aerovaradero, Cubapack..." />
+            </div>
+
+            {/* Fecha */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Fecha de Envío</label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
+                <input type="date" {...register('shipment_date', { required: true })} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
+
+             {/* Tasa Cambiaria (En ese momento) */}
+             <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Tasa de Cambio (CUP)</label>
+              <input type="number" step="0.01" {...register('exchange_rate', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.00" />
+            </div>
+
+            {/* Costos USD */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Costo Envío (USD)</label>
+              <div className="relative">
+                 <DollarSign className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
+                 <input type="number" step="0.01" {...register('shipping_cost_usd', { required: true })} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Costo Mercancía (USD)</label>
+              <div className="relative">
+                 <DollarSign className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
+                 <input type="number" step="0.01" {...register('merchandise_cost_usd', { required: true })} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
+
+            {/* Aranceles CUP */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Aranceles Aduana (CUP)</label>
+              <div className="relative">
+                 <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-xs">CUP</span>
+                 <input type="number" step="0.01" {...register('customs_fee_cup', { required: true })} className="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
+
+            {/* Notas */}
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Notas / Observaciones</label>
+              <textarea {...register('notes')} rows={2} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">Cancelar</button>
+            <button type="submit" disabled={isSaving} className="flex items-center px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md disabled:opacity-70">
+              {isSaving ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
+              Guardar Envío
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\ui\ImageDropzone.jsx
+============================================
+// src/components/ui/ImageDropzone.jsx
+import { useState } from 'react';
+import { UploadCloud, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+export default function ImageDropzone({ value, onChange, className }) {
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Obtener URL base desde variables de entorno
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validación básica
+    if (!file.type.startsWith('image/')) {
+      toast.error('Solo se permiten imágenes');
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('Error subiendo imagen');
+
+      const data = await res.json();
+      onChange(data.url); // Pasamos la URL al padre (Formulario)
+      toast.success('Foto subida');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al subir la imagen');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemove = (e) => {
+    e.preventDefault(); // Evitar abrir el selector de archivos
+    onChange('');
+  };
+
+  return (
+    <div className={`relative group w-32 h-32 rounded-full border-4 border-dashed border-gray-200 overflow-hidden bg-gray-50 hover:border-blue-400 transition-colors cursor-pointer ${className}`}>
+      
+      {/* Input invisible que cubre todo */}
+      <input 
+        type="file" 
+        accept="image/*" 
+        onChange={handleFileChange}
+        disabled={isUploading}
+        className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
+      />
+
+      {/* CONTENIDO VISUAL */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        {isUploading ? (
+          <div className="flex flex-col items-center text-blue-500">
+            <Loader2 className="animate-spin h-8 w-8 mb-1" />
+            <span className="text-[10px] font-bold">SUBIENDO...</span>
+          </div>
+        ) : value ? (
+          <>
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            {/* Overlay para cambiar */}
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+               <UploadCloud className="text-white h-8 w-8" />
+               <span className="text-white text-[10px] font-bold mt-1">CAMBIAR</span>
+            </div>
+          </>
+        ) : (
+          <div className="text-gray-400 flex flex-col items-center px-2 text-center">
+            <ImageIcon className="h-8 w-8 mb-1" />
+            <span className="text-[10px] leading-tight">Click para subir foto</span>
+          </div>
+        )}
+      </div>
+
+      {/* Botón X para eliminar (Solo si hay imagen y no está subiendo) */}
+      {value && !isUploading && (
+        <button 
+          onClick={handleRemove}
+          className="absolute top-1 right-1 z-20 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md transition-transform hover:scale-110"
+          type="button"
+        >
+          <X size={12} />
+        </button>
+      )}
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\users\UserModal.jsx
+============================================
+// src/components/users/UserModal.jsx
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { X, Save, Loader2, User, Phone, Mail, Lock, Shield, Send } from 'lucide-react';
+import ImageDropzone from '../ui/ImageDropzone';
+
+export default function UserModal({ isOpen, onClose, userToEdit, onSave, isSaving, isSelfEdit = false, isAdmin = false }) {
+  const { register, handleSubmit, reset, control, setValue } = useForm();
+
+  useEffect(() => {
+    if (isOpen) {
+      if (userToEdit) {
+        // Modo Edición: Llenar datos
+        setValue('name', userToEdit.name);
+        setValue('phone', userToEdit.phone);
+        setValue('email', userToEdit.email || '');
+        setValue('photo_url', userToEdit.photo_url || '');
+        setValue('telegram_chat_id', userToEdit.telegram_chat_id || '');
+        setValue('role', userToEdit.role); // Aunque sea self-edit, cargamos el rol (aunque esté disabled visualmente)
+        setValue('password', ''); // Password siempre limpio por seguridad
+      } else {
+        // Modo Crear: Limpiar
+        reset({ role: 'seller', active: true });
+      }
+    }
+  }, [isOpen, userToEdit, setValue, reset]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-in fade-in zoom-in duration-200">
+        
+        {/* HEADER */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+          <h3 className="text-lg font-bold text-white flex items-center">
+            <User className="mr-2" />
+            {isSelfEdit ? 'Mi Perfil' : (userToEdit ? 'Editar Usuario' : 'Nuevo Usuario')}
+          </h3>
+          <button onClick={onClose} className="text-blue-100 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSave)} className="p-6 md:p-8">
+          
+          <div className="flex flex-col md:flex-row gap-8">
+            
+            {/* COLUMNA IZQUIERDA: FOTO */}
+            <div className="flex flex-col items-center md:w-1/3 space-y-4">
+              <label className="text-sm font-semibold text-gray-700">Foto de Perfil</label>
+              <Controller
+                control={control}
+                name="photo_url"
+                render={({ field: { value, onChange } }) => (
+                  <ImageDropzone value={value} onChange={onChange} className="w-40 h-40" />
+                )}
+              />
+              <p className="text-xs text-center text-gray-400 px-4">
+                Sube una imagen cuadrada para mejor visualización.
+              </p>
+            </div>
+
+            {/* COLUMNA DERECHA: DATOS */}
+            <div className="md:w-2/3 space-y-5">
+              
+              {/* Nombre */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo</label>
+                <div className="relative">
+                   <User className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                   <input {...register('name', { required: true })} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: Juan Pérez" />
+                </div>
+              </div>
+
+              {/* Teléfono & Email */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Teléfono (Login)</label>
+                   <div className="relative">
+                      <Phone className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                      <input {...register('phone', { required: true })} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Email (Opcional)</label>
+                   <div className="relative">
+                      <Mail className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                      <input {...register('email')} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                   </div>
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    {userToEdit ? 'Cambiar Contraseña (Opcional)' : 'Contraseña *'}
+                 </label>
+                 <div className="relative">
+                    <Lock className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                    <input 
+                      type="password" 
+                      {...register('password', { required: !userToEdit })} // Requerido solo si es nuevo
+                      placeholder={userToEdit ? "Dejar vacío para mantener actual" : "••••••"}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    />
+                 </div>
+              </div>
+
+              {/* ROL (Solo visible/editable si eres Admin y NO es tu propio perfil en modo edición rápida) */}
+              {/* Si es Admin gestionando usuarios -> Editable */}
+              {/* Si es Admin editándose a sí mismo -> Disabled */}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Rol de Usuario</label>
+                    <div className="relative">
+                        <Shield className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                        <select 
+                            {...register('role')} 
+                            disabled={!isAdmin || isSelfEdit} // Bloqueado si no soy admin o si me edito a mí mismo
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                        >
+                            <option value="seller">Vendedor</option>
+                            <option value="storekeeper">Almacenero</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                  </div>
+
+                  <div>
+                     <label className="block text-sm font-semibold text-gray-700 mb-1">Telegram Chat ID</label>
+                     <div className="relative">
+                        <Send className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                        <input {...register('telegram_chat_id')} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" placeholder="Ej: 123456789" />
+                     </div>
+                  </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="flex items-center px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all disabled:opacity-70 active:scale-95"
+            >
+              {isSaving ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
+              {userToEdit ? 'Guardar Cambios' : 'Crear Usuario'}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\context\AuthContext.jsx
+============================================
+// src/context/AuthContext.jsx
+import { createContext, useState, useEffect, useContext } from 'react';
+import { jwtDecode } from 'jwt-decode';
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Verificar si hay sesión al cargar la app
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if (token && storedUser) {
+      try {
+        const decoded = jwtDecode(token);
+        // Verificar si el token expiró
+        if (decoded.exp * 1000 < Date.now()) {
+          logout();
+        } else {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (e) {
+        logout();
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  const login = (token, userData) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    window.location.href = '/login'; // Redirección forzada para limpiar estado Apollo
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\auth.js
+============================================
+// src/graphql/auth.js
+import { gql } from '@apollo/client';
+
+
+export const LOGIN_MUTATION = gql`
+  mutation Login($phone: String!, $password: String!) {
+    login(phone: $phone, password: $password) {
+      token
+      user {
+        id_user
+        name
+        role
+        photo_url
+        
+        # ✅ AGREGAMOS ESTOS CAMPOS FALTANTES:
+        phone
+        email
+        telegram_chat_id
+      }
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\categories.js
+============================================
+// src/graphql/categories.js
+import { gql } from '@apollo/client';
+
+export const GET_CATEGORIES = gql`
+  query GetCategories {
+    categories {
+      id_category
+      name
+      active
+    }
+  }
+`;
+
+export const CREATE_CATEGORY = gql`
+  mutation CreateCategory($name: String!) {
+    createCategory(name: $name) {
+      id_category
+      name
+    }
+  }
+`;
+
+export const UPDATE_CATEGORY = gql`
+  mutation UpdateCategory($id_category: Int!, $name: String!) {
+    updateCategory(id_category: $id_category, name: $name) {
+      id_category
+      name
+    }
+  }
+`;
+
+export const DELETE_CATEGORY = gql`
+  mutation DeleteCategory($id_category: Int!) {
+    deleteCategory(id_category: $id_category) {
+      id_category
+      active
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\configuration.js
+============================================
+import { gql } from '@apollo/client';
+
+export const GET_CONFIG = gql`
+  query GetSystemConfiguration {
+    systemConfiguration {
+      id_config
+      company_name
+      company_phone
+      company_email
+      logo_url  # <--- NUEVO CAMPO
+      description
+      seller_commission_percentage
+      default_exchange_rate
+      telegram_bot_token
+      active
+      exchange_rate_sync_time
+      monthly_report_day
+      monthly_report_time
+      annual_report_day
+      annual_report_time
+    }
+  }
+`;
+
+export const UPDATE_CONFIG = gql`
+  mutation UpdateSystemConfiguration($id_config: Int!, $input: UpdateSystemConfigurationInput!) {
+    updateSystemConfiguration(id_config: $id_config, input: $input) {
+      id_config
+      company_name
+    }
+  }
+`;
+
+export const TRIGGER_SYNC = gql`
+  mutation TriggerPriceSync {
+    triggerPriceSync
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\products.js
+============================================
+import { gql } from '@apollo/client';
+
+
+
+export const CREATE_PRODUCT = gql`
+  mutation CreateProduct($input: CreateProductInput!) {
+    createProduct(input: $input) {
+      id_product
+      name
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT = gql`
+  mutation UpdateProduct($id_product: Int!, $input: UpdateProductInput!) {
+    updateProduct(id_product: $id_product, input: $input) {
+      id_product
+      name
+      stock
+      active
+    }
+  }
+`;
+
+export const GET_PRODUCTS = gql`
+  query GetProducts($active: Boolean) {
+    products(active: $active) {
+      id_product
+      name
+      description
+      purchase_price
+      sale_price
+      stock
+      sku
+      
+      supplier_name  # 👈 ¡AGREGA ESTA LÍNEA!
+      
+      photo_url
+      warranty
+      active
+      product_categories {
+        category {
+          id_category
+          name
+        }
+      }
+    }
+  }
+`;
+
+
+
+export const ASSIGN_PRODUCT = gql`
+  mutation AssignProductToSeller($sellerId: Int!, $productId: Int!, $quantity: Int!) {
+    assignProductToSeller(sellerId: $sellerId, productId: $productId, quantity: $quantity) {
+      id_seller_product
+      quantity
+      seller {
+        name
+      }
+    }
+  }
+`;
+
+// Obtener productos específicos asignados a un vendedor
+export const GET_SELLER_PRODUCTS = gql`
+  query GetSellerProducts($sellerId: Int!) {
+    sellerProducts(sellerId: $sellerId) {
+      id_seller_product
+      quantity
+      assigned_at
+      product {
+        id_product
+        name
+        photo_url
+        sale_price
+        stock # Stock global para referencia
+      }
+    }
+  }
+`;
+
+// Devolver producto del vendedor al almacén
+export const RETURN_PRODUCT_FROM_SELLER = gql`
+  mutation ReturnProductFromSeller($sellerId: Int!, $productId: Int!, $quantity: Int!) {
+    returnProductFromSeller(sellerId: $sellerId, productId: $productId, quantity: $quantity) {
+      id_seller_product
+      quantity
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\reports.js
+============================================
+import { gql } from '@apollo/client';
+
+export const GET_DASHBOARD_STATS = gql`
+  query GetDashboardStats {
+    dashboardStats {
+      exchangeRate
+      activeProductsCount
+      totalItemsSold
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\sales.js
+============================================
+import { gql } from '@apollo/client';
+
+export const CREATE_SALE = gql`
+  mutation CreateSale(
+    $sellerId: Int!,
+    $exchange_rate: Float!,
+    $total_cup: Float!,
+    $buyer_phone: String!,
+    $payment_method: PaymentMethod!,
+    $notes: String,
+    $items: [SaleItemInput!]!
+  ) {
+    createSale(
+      sellerId: $sellerId,
+      exchange_rate: $exchange_rate,
+      total_cup: $total_cup,
+      buyer_phone: $buyer_phone,
+      payment_method: $payment_method,
+      notes: $notes,
+      items: $items
+    ) {
+      id_sale
+      total_cup
+    }
+  }
+`;
+
+export const GET_SALES = gql`
+  query GetSales {
+    sales {
+      id_sale
+      sale_date
+      total_cup
+      buyer_phone
+      payment_method
+      exchange_rate
+      status        # <--- ¡IMPORTANTE!
+      notes
+      seller { 
+        id_user
+        name 
+      }
+      sale_products {
+        id_product  # <--- Necesario para devoluciones
+        quantity
+        product { 
+            id_product
+            name 
+        }
+      }
+    }
+  }
+`;
+
+export const UPDATE_SALE = gql`
+  mutation UpdateSale($id_sale: Int!, $input: UpdateSaleInput!) {
+    updateSale(id_sale: $id_sale, input: $input) {
+      id_sale
+      total_cup
+    }
+  }
+`;
+
+// ✅ CAMBIO DE NOMBRE: De DELETE_SALE a CANCEL_SALE
+export const CANCEL_SALE = gql`
+  mutation CancelSale($id_sale: Int!) {
+    cancelSale(id_sale: $id_sale) {
+      id_sale
+      status
+    }
+  }
+`;
+
+// Ojo: Mantengo DELETE_SALE por si acaso tienes algún código viejo que lo llame, 
+// pero deberías dejar de usarlo. Si no lo usas, bórralo.
+export const DELETE_SALE = gql`
+  mutation DeleteSale($id_sale: Int!) {
+    deleteSale(id_sale: $id_sale) {
+      id_sale
+    }
+  }
+`;
+
+// ✅ NUEVA PARA DEVOLUCIONES
+export const CREATE_RETURN = gql`
+  mutation CreateReturn($saleId: Int!, $productId: Int!, $quantity: Int!, $reason: String, $returnToStock: Boolean!) {
+    createReturn(saleId: $saleId, productId: $productId, quantity: $quantity, reason: $reason, returnToStock: $returnToStock) {
+      id_return
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\shipments.js
+============================================
+import { gql } from '@apollo/client';
+
+export const GET_SHIPMENTS = gql`
+  query GetShipments {
+    shipments {
+      id_shipment
+      agency_name
+      shipment_date
+      shipping_cost_usd
+      merchandise_cost_usd
+      customs_fee_cup
+      exchange_rate
+      notes
+    }
+  }
+`;
+
+export const CREATE_SHIPMENT = gql`
+  mutation CreateShipment(
+    $agency_name: String!, 
+    $shipment_date: String!, 
+    $shipping_cost_usd: Float!, 
+    $merchandise_cost_usd: Float!, 
+    $customs_fee_cup: Float!, 
+    $exchange_rate: Float!, 
+    $notes: String
+  ) {
+    createShipment(
+      agency_name: $agency_name, 
+      shipment_date: $shipment_date, 
+      shipping_cost_usd: $shipping_cost_usd, 
+      merchandise_cost_usd: $merchandise_cost_usd, 
+      customs_fee_cup: $customs_fee_cup, 
+      exchange_rate: $exchange_rate, 
+      notes: $notes
+    ) {
+      id_shipment
+      agency_name
+    }
+  }
+`;
+export const UPDATE_SHIPMENT = gql`
+  mutation UpdateShipment($id_shipment: Int!, $input: UpdateShipmentInput!) {
+    updateShipment(id_shipment: $id_shipment, input: $input) {
+      id_shipment
+      agency_name
+      shipment_date
+      shipping_cost_usd
+      merchandise_cost_usd
+      customs_fee_cup
+      exchange_rate
+      notes
+    }
+  }
+`;
+
+export const DELETE_SHIPMENT = gql`
+  mutation DeleteShipment($id_shipment: Int!) {
+    deleteShipment(id_shipment: $id_shipment) {
+      id_shipment
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\graphql\users.js
+============================================
+// src/graphql/users.js
+import { gql } from '@apollo/client';
+
+export const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id_user
+      name
+      phone
+      email
+      role
+      active
+      photo_url
+      telegram_chat_id
+    }
+  }
+`;
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      id_user
+      name
+      phone
+      email
+      role
+      photo_url
+      telegram_chat_id
+    }
+  }
+`;
+
+export const CREATE_USER = gql`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id_user
+      name
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($id_user: Int!, $input: UpdateUserInput!) {
+    updateUser(id_user: $id_user, input: $input) {
+      id_user
+      name
+      role
+      photo_url
+    }
+  }
+`;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($id_user: Int!) {
+    deleteUser(id_user: $id_user) {
+      id_user
+      active
+    }
+  }
+`;.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Categories.jsx
+============================================
+// src/pages/Categories.jsx
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_CATEGORIES, CREATE_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY } from '../graphql/categories';
+import { Search, Plus, Edit2, Trash2, Tag, Loader2, AlertCircle } from 'lucide-react';
+import CategoryModal from '../components/categories/CategoryModal';
+import toast from 'react-hot-toast';
+
+export default function Categories() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+
+  // --- GRAPHQL ---
+  const { data, loading, error } = useQuery(GET_CATEGORIES);
+  
+  const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY, {
+    refetchQueries: [{ query: GET_CATEGORIES }], // Recarga la lista al terminar
+  });
+
+  const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY, {
+    refetchQueries: [{ query: GET_CATEGORIES }],
+  });
+
+  const [deleteCategory] = useMutation(DELETE_CATEGORY, {
+    refetchQueries: [{ query: GET_CATEGORIES }],
+  });
+
+  // --- LOGICA ---
+  const filteredCategories = data?.categories?.filter(cat => 
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const handleOpenCreate = () => {
+    setEditingCategory(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (category) => {
+    setEditingCategory(category);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id, name) => {
+    if (window.confirm(`¿Estás seguro de eliminar "${name}"?\nSe ocultará de la lista.`)) {
+      try {
+        await deleteCategory({ variables: { id_category: id } });
+        toast.success('Categoría eliminada');
+      } catch (err) {
+        toast.error('Error al eliminar');
+      }
+    }
+  };
+
+  const handleSave = async (formData) => {
+    try {
+      if (editingCategory) {
+        await updateCategory({
+          variables: { id_category: editingCategory.id_category, name: formData.name }
+        });
+        toast.success('Categoría actualizada');
+      } else {
+        await createCategory({
+          variables: { name: formData.name }
+        });
+        toast.success('Categoría creada');
+      }
+      setIsModalOpen(false);
+    } catch (err) {
+      toast.error('Error al guardar: ' + err.message);
+    }
+  };
+
+  if (loading) return <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin h-10 w-10 text-blue-600" /></div>;
+  if (error) return <div className="p-4 text-red-500 text-center">Error cargando categorías.</div>;
+
+  return (
+    <div className="pb-20">
+      {/* --- HEADER --- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <Tag className="mr-3 text-blue-600" /> Categorías
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">Gestiona las clasificaciones de tus productos.</p>
+        </div>
+
+        <button 
+          onClick={handleOpenCreate}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-200 flex items-center justify-center transition-transform active:scale-95"
+        >
+          <Plus className="mr-2 h-5 w-5" /> Nueva Categoría
+        </button>
+      </div>
+
+      {/* --- BUSCADOR --- */}
+      <div className="relative mb-6">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Buscar categoría..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+        />
+      </div>
+
+      {/* --- CONTENIDO --- */}
+      {filteredCategories.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
+          <AlertCircle className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+          <p className="text-gray-500 font-medium">No se encontraron categorías.</p>
+        </div>
+      ) : (
+        <>
+          {/* VISTA DESKTOP (TABLA) - Oculta en pantallas pequeñas */}
+          <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4 font-semibold text-gray-600 text-sm">#</th>
+                  <th className="px-6 py-4 font-semibold text-gray-600 text-sm">Nombre</th>
+                  <th className="px-6 py-4 font-semibold text-gray-600 text-sm">Estado</th>
+                  <th className="px-6 py-4 font-semibold text-gray-600 text-sm text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {filteredCategories.map((cat, index) => (
+                  <tr key={cat.id_category} className="hover:bg-blue-50/30 transition-colors group">
+                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">#{cat.id_category}</td>
+                    <td className="px-6 py-4 font-medium text-gray-800">{cat.name}</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-700 px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wide">
+                        Activa
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => handleOpenEdit(cat)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Editar"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(cat.id_category, cat.name)}
+                        className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors" title="Eliminar"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* VISTA MOVIL (TARJETAS) - Visible solo en pantallas pequeñas */}
+          <div className="md:hidden grid grid-cols-1 gap-4">
+            {filteredCategories.map((cat) => (
+              <div key={cat.id_category} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-800 text-lg">{cat.name}</h3>
+                  <div className="flex items-center mt-1 space-x-2">
+                    <span className="text-xs text-gray-400 font-mono">#{cat.id_category}</span>
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                      Activa
+                    </span>
+                  </div>
+                </div>
+                <div className="flex space-x-1">
+                  <button 
+                    onClick={() => handleOpenEdit(cat)}
+                    className="p-3 bg-blue-50 text-blue-600 rounded-xl active:scale-95 transition-transform"
+                  >
+                    <Edit2 size={20} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(cat.id_category, cat.name)}
+                    className="p-3 bg-red-50 text-red-500 rounded-xl active:scale-95 transition-transform"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* --- MODAL --- */}
+      <CategoryModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        categoryToEdit={editingCategory}
+        onSave={handleSave}
+        isSaving={creating || updating}
+      />
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Dashboard.jsx
+============================================
+// src/pages/Dashboard.jsx
+import { useQuery } from '@apollo/client';
+import { GET_DASHBOARD_STATS } from '../graphql/reports';
+import { useAuth } from '../context/AuthContext'; // Importamos AuthContext para saber el rol
+import { Loader2, TrendingUp, Package, ShoppingBag, UserCheck, Globe } from 'lucide-react';
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, { 
+      pollInterval: 30000, // Actualizar cada 30s
+      fetchPolicy: 'network-only' 
+  });
+
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-blue-600 h-10 w-10" /></div>;
+  if (error) return <div className="text-red-500 text-center p-10">Error cargando panel.</div>;
+
+  const { exchangeRate, activeProductsCount, totalItemsSold } = data.dashboardStats;
+  const isSeller = user.role === 'seller';
+
+  return (
+    <div className="space-y-8 pb-20">
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+                {isSeller ? `Hola, ${user.name}` : 'Panel de Control'}
+            </h1>
+            <p className="text-gray-500">
+                {isSeller ? 'Resumen de tu actividad comercial.' : 'Resumen global del negocio.'}
+            </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {/* TARJETA 1: VENTAS (Cambia según rol) */}
+        <div className="bg-gradient-to-br from-blue-600 to-blue-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
+           <div className="relative z-10">
+              <h3 className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                 <ShoppingBag size={14}/>
+                 {isSeller ? "Mis Ventas Totales" : "Total Global Vendido"}
+              </h3>
+              <div className="flex items-end">
+                <span className="text-4xl font-bold">{totalItemsSold}</span>
+                <span className="mb-1.5 ml-2 text-blue-100 text-sm font-medium">unidades</span>
+              </div>
+           </div>
+           {/* Decoración */}
+           <ShoppingBag className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
+        </div>
+
+        {/* TARJETA 2: STOCK (Cambia según rol) */}
+        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
+           <div className="relative z-10">
+              <h3 className="text-indigo-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                 {isSeller ? <UserCheck size={14}/> : <Globe size={14}/>}
+                 {isSeller ? "En mi Posesión" : "Catálogo Global Activo"}
+              </h3>
+              <div className="flex items-end">
+                <span className="text-4xl font-bold">{activeProductsCount}</span>
+                <span className="mb-1.5 ml-2 text-indigo-100 text-sm font-medium">
+                    {isSeller ? 'productos asignados' : 'SKUs en almacén'}
+                </span>
+              </div>
+           </div>
+           <Package className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
+        </div>
+
+        {/* TARJETA 3: TASA (Igual para todos) */}
+        <div className="bg-gradient-to-br from-orange-500 to-red-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden">
+           <div className="relative z-10">
+              <h3 className="text-white/80 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <TrendingUp size={14}/>
+                  Tasa del Día (CUP)
+              </h3>
+              <div className="flex items-end">
+                <span className="text-4xl font-bold">{exchangeRate}</span>
+                <span className="mb-1.5 ml-2 text-white/80 text-sm font-medium">x 1 USD</span>
+              </div>
+              <p className="text-[10px] text-white/60 mt-3">Base para cálculo de precios</p>
+           </div>
+           <TrendingUp className="absolute right-[-10px] bottom-[-10px] h-28 w-28 text-white opacity-10" />
+        </div>
+
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Inventory.jsx
+============================================
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+// Queries
+import { GET_PRODUCTS, UPDATE_PRODUCT,RETURN_PRODUCT_FROM_SELLER, CREATE_PRODUCT, ASSIGN_PRODUCT, GET_SELLER_PRODUCTS } from '../graphql/products'; // Agregamos GET_SELLER_PRODUCTS
+
+
+import { GET_CATEGORIES } from '../graphql/categories';
+import { GET_USERS } from '../graphql/users'; // Necesario para llenar el select de vendedores
+// UI
+import { Search, Plus, Loader2, PackageOpen, Filter, Users, User, RefreshCw } from 'lucide-react';
+import ProductCard from '../components/products/ProductCard';
+import ProductModal from '../components/products/ProductModal';
+import AssignmentModal from '../components/products/AssignmentModal';
+import toast from 'react-hot-toast';
+import clsx from 'clsx';
+import { useAuth } from '../context/AuthContext';
+
+export default function Inventory() {
+  const { user } = useAuth();
+  
+  // 'active' | 'sellers' | 'inactive'
+  const [viewMode, setViewMode] = useState('active'); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSeller, setSelectedSeller] = useState(''); // ID del vendedor seleccionado
+const [returnProduct] = useMutation(RETURN_PRODUCT_FROM_SELLER);
+  // Estados de Modales
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [productToAssign, setProductToAssign] = useState(null);
+
+  // --- QUERIES PRINCIPALES ---
+  const { data: productsData, loading: loadingProds, refetch: refetchProds } = useQuery(GET_PRODUCTS, {
+    variables: { active: viewMode === 'active' },
+    skip: viewMode === 'sellers', // No cargar productos globales si estamos viendo vendedores
+    fetchPolicy: 'network-only'
+  });
+
+  const { data: categoriesData } = useQuery(GET_CATEGORIES);
+  
+  // Cargar usuarios para el dropdown de la vista "Vendedores"
+  const { data: usersData } = useQuery(GET_USERS);
+  const sellersList = usersData?.users?.filter(u => u.role === 'seller' && u.active) || [];
+
+  // Query específica: Productos del Vendedor Seleccionado
+  const { data: sellerStockData, loading: loadingSellerStock, refetch: refetchSellerStock } = useQuery(GET_SELLER_PRODUCTS, {
+    variables: { sellerId: parseInt(selectedSeller) },
+    skip: viewMode !== 'sellers' || !selectedSeller, // Solo ejecuta si estamos en la tab correcta y hay vendedor
+    fetchPolicy: 'network-only'
+  });
+
+  // --- MUTACIONES ---
+  const [createProduct, { loading: creating }] = useMutation(CREATE_PRODUCT, { onCompleted: () => refetchProds() });
+  const [updateProduct, { loading: updating }] = useMutation(UPDATE_PRODUCT, { onCompleted: () => refetchProds() });
+  const [assignProduct, { loading: assigning }] = useMutation(ASSIGN_PRODUCT);
+  
+  // (Aquí iría la mutación de retorno cuando actualicemos el backend)
+
+  // --- LÓGICA DE FILTRADO ---
+  
+  // 1. Filtrado Global
+  const filteredGlobalProducts = productsData?.products?.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || 
+                            p.product_categories.some(pc => pc.category.id_category === parseInt(selectedCategory));
+    return matchesSearch && matchesCategory;
+  }) || [];
+
+  // 2. Filtrado Vendedores
+  // Aunque ya traemos solo lo del vendedor, aplicamos el buscador por nombre localmente
+  const filteredSellerStock = sellerStockData?.sellerProducts?.filter(item => {
+     return item.product.name.toLowerCase().includes(searchTerm.toLowerCase());
+  }) || [];
+
+
+  // --- HANDLERS ---
+  const handleOpenCreate = () => { setEditingProduct(null); setIsModalOpen(true); };
+  const handleOpenEdit = (product) => { setEditingProduct(product); setIsModalOpen(true); };
+  
+  const handleSoftDelete = async (product) => {
+    if(!window.confirm(`¿Mover "${product.name}" a la papelera?`)) return;
+    try {
+        await updateProduct({
+            variables: { id_product: product.id_product, input: { active: false } }
+        });
+        toast.success("Producto movido a papelera");
+    } catch (e) { toast.error(e.message); }
+  };
+
+  const handleReactivate = async (product) => {
+    // Confirmación opcional para evitar clics accidentales
+    if(!window.confirm(`¿Reactivar "${product.name}"? Se establecerá el stock en 1 unidad.`)) return;
+
+    try {
+        await updateProduct({
+            variables: { 
+                id_product: product.id_product, 
+                input: { 
+                    active: true, // Lo marcamos como activo
+                    stock: 1      // Le damos 1 de stock para que aparezca en inventario
+                } 
+            }
+        });
+        toast.success("Producto reactivado con éxito");
+    } catch (e) {
+        console.error(e);
+        toast.error("Error al reactivar: " + e.message);
+    }
+};
+
+  const handleOpenAssign = (product) => { setProductToAssign(product); setIsAssignModalOpen(true); };
+
+  const handleAssign = async (data) => {
+    try {
+        await assignProduct({
+            variables: {
+                sellerId: parseInt(data.sellerId),
+                productId: productToAssign.id_product,
+                quantity: parseInt(data.quantity)
+            }
+        });
+        toast.success("Asignado correctamente");
+        setIsAssignModalOpen(false);
+        // Si estamos viendo stock de vendedor, actualizarlo también
+        if(viewMode === 'sellers' && selectedSeller === data.sellerId) refetchSellerStock();
+    } catch (e) { toast.error(e.message); }
+  };
+
+  const handleSave = async (formData) => {
+    try {
+      // 1. Limpiamos los datos para que coincidan con el Schema GraphQL
+      // Quitamos campos que no van en el 'input' (como id_product, __typename, arrays de objetos, etc)
+      const inputData = {
+          name: formData.name,
+          description: formData.description,
+          stock: formData.stock,
+          purchase_price: formData.purchase_price,
+          sale_price: formData.sale_price,
+          sku: formData.sku,
+          supplier_name: formData.supplier_name,
+          photo_url: formData.photo_url,
+          warranty: formData.warranty,
+          active: true, // Siempre true al guardar desde aquí
+          categoryIds: formData.categoryIds // El modal ya lo manda como array de números
+      };
+
+      if (editingProduct) {
+        // --- MODO EDICIÓN ---
+        await updateProduct({
+          variables: { 
+            id_product: editingProduct.id_product, // ID va fuera del input
+            input: inputData                       // Datos van dentro del input
+          }
+        });
+        toast.success('Producto actualizado correctamente');
+      } else {
+        // --- MODO CREACIÓN ---
+        await createProduct({
+          variables: { 
+            input: inputData 
+          }
+        });
+        toast.success('Producto creado correctamente');
+      }
+      
+      setIsModalOpen(false); // Cerrar modal solo si no hubo error
+
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      // Mostramos el error exacto que devuelve GraphQL
+      toast.error('Error: ' + err.message);
+    }
+};
+  
+  const handleReturnStock = async (item) => {
+      // Pedimos confirmación simple con un prompt para la cantidad (rápido y efectivo)
+      const qtyStr = prompt(`¿Cuántos "${item.product.name}" deseas devolver al almacén? (Máx: ${item.quantity})`, item.quantity);
+      
+      if (!qtyStr) return; // Cancelado
+      const qty = parseInt(qtyStr);
+
+      if (isNaN(qty) || qty <= 0 || qty > item.quantity) {
+          toast.error("Cantidad inválida");
+          return;
+      }
+
+      try {
+          await returnProduct({
+              variables: {
+                  sellerId: parseInt(selectedSeller), // ID del vendedor seleccionado en el dropdown
+                  productId: item.product.id_product,
+                  quantity: qty
+              }
+          });
+          
+          toast.success("Producto retornado al almacén");
+          refetchSellerStock(); // Actualizar la tabla del vendedor
+          refetchProds();       // Actualizar la tabla del almacén (por si cambiamos de tab)
+      } catch (e) {
+          toast.error(e.message);
+      }
+  };
+
+
+  return (
+    <div className="pb-20 space-y-6">
+       
+       {/* HEADER */}
+       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                <PackageOpen className="mr-3 text-blue-600" /> Inventario
+            </h1>
+            <p className="text-gray-500 text-sm">Gestiona tus productos y existencias.</p>
+          </div>
+          {/* Botón solo visible en vistas de inventario propio */}
+          {viewMode !== 'sellers' && (
+              <button onClick={handleOpenCreate} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center transition-transform active:scale-95">
+                <Plus className="mr-2 h-5 w-5" /> Nuevo Producto
+              </button>
+          )}
+       </div>
+
+       {/* --- BARRA DE CONTROL (TABS + FILTROS) --- */}
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
+          
+          {/* TABS SUPERIORES */}
+          <div className="flex p-1 bg-gray-100 rounded-xl overflow-x-auto no-scrollbar">
+             <button onClick={() => setViewMode('active')} className={clsx("flex-1 min-w-[100px] px-4 py-2 text-sm font-bold rounded-lg transition-all whitespace-nowrap", viewMode === 'active' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700")}>
+                En Almacén
+             </button>
+             <button onClick={() => setViewMode('sellers')} className={clsx("flex-1 min-w-[140px] px-4 py-2 text-sm font-bold rounded-lg transition-all whitespace-nowrap", viewMode === 'sellers' ? "bg-white text-purple-600 shadow-sm" : "text-gray-500 hover:text-gray-700")}>
+                En Vendedores
+             </button>
+             <button onClick={() => setViewMode('inactive')} className={clsx("flex-1 min-w-[100px] px-4 py-2 text-sm font-bold rounded-lg transition-all whitespace-nowrap", viewMode === 'inactive' ? "bg-white text-red-500 shadow-sm" : "text-gray-500 hover:text-gray-700")}>
+                Papelera
+             </button>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+             
+             {/* BUSCADOR (Común para todos) */}
+             <div className="relative flex-1 w-full">
+                <Search className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                <input 
+                  type="text" 
+                  placeholder={viewMode === 'sellers' ? "Buscar en posesión del vendedor..." : "Buscar producto..."}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+             </div>
+
+             {/* FILTRO CONDICIONAL: CATEGORÍA (Global) O VENDEDOR (Sellers) */}
+             {viewMode === 'sellers' ? (
+                 <div className="relative w-full lg:w-72">
+                    <User className="absolute left-3 top-3 text-purple-500 h-4 w-4" />
+                    <select 
+                      value={selectedSeller}
+                      onChange={(e) => setSelectedSeller(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 bg-purple-50 border border-purple-200 text-purple-900 font-medium rounded-xl focus:ring-2 focus:ring-purple-500 outline-none cursor-pointer"
+                    >
+                       <option value="">-- Seleccionar Vendedor --</option>
+                       {sellersList.map(s => (
+                          <option key={s.id_user} value={s.id_user}>{s.name}</option>
+                       ))}
+                    </select>
+                 </div>
+             ) : (
+                 <div className="relative w-full lg:w-64">
+                    <Filter className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
+                    <select 
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
+                    >
+                       <option value="all">Todas las Categorías</option>
+                       {categoriesData?.categories?.map(cat => (
+                          <option key={cat.id_category} value={cat.id_category}>{cat.name}</option>
+                       ))}
+                    </select>
+                 </div>
+             )}
+          </div>
+       </div>
+
+       {/* --- CONTENIDO PRINCIPAL --- */}
+       
+       {/* VISTA 1: EN ALMACÉN / PAPELERA */}
+       {viewMode !== 'sellers' && (
+           <>
+               {loadingProds ? (
+                  <div className="flex justify-center py-20"><Loader2 className="animate-spin text-blue-600 h-10 w-10" /></div>
+               ) : filteredGlobalProducts.length === 0 ? (
+                  <div className="text-center py-20 opacity-50">
+                     <PackageOpen className="mx-auto h-16 w-16 text-gray-300 mb-4" />
+                     <p className="text-lg font-medium text-gray-500">No hay productos aquí.</p>
+                  </div>
+               ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                     {filteredGlobalProducts.map(product => (
+                        <ProductCard 
+                           key={product.id_product} 
+                           product={product} 
+                           onEdit={handleOpenEdit}
+                           onDelete={handleSoftDelete}
+                           onReactivate={handleReactivate}
+                           onAssign={(user?.role === 'admin' || user?.role === 'storekeeper') ? handleOpenAssign : undefined}
+                           isInactiveView={viewMode === 'inactive'}
+                        />
+                     ))}
+                  </div>
+               )}
+           </>
+       )}
+
+       {/* VISTA 2: VENDEDORES */}
+       {viewMode === 'sellers' && (
+           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
+               {!selectedSeller ? (
+                   <div className="flex flex-col items-center justify-center h-full py-20 text-gray-400">
+                       <Users className="h-16 w-16 mb-4 text-purple-200" />
+                       <p className="text-lg font-medium">Selecciona un vendedor para ver su inventario.</p>
+                   </div>
+               ) : loadingSellerStock ? (
+                   <div className="flex justify-center py-20"><Loader2 className="animate-spin text-purple-600 h-10 w-10" /></div>
+               ) : filteredSellerStock.length === 0 ? (
+                   <div className="text-center py-20 text-gray-500">
+                       <p>Este vendedor no tiene mercancía asignada que coincida con la búsqueda.</p>
+                   </div>
+               ) : (
+                   <div className="overflow-x-auto">
+                       <table className="w-full text-left">
+                           <thead className="bg-purple-50 text-purple-900 border-b border-purple-100">
+                               <tr>
+                                   <th className="px-6 py-4 font-bold text-sm">Producto</th>
+                                   <th className="px-6 py-4 font-bold text-sm text-center">En Posesión</th>
+                                   <th className="px-6 py-4 font-bold text-sm text-right">Precio Venta (CUP)</th>
+                                   <th className="px-6 py-4 font-bold text-sm text-right">Acciones</th>
+                               </tr>
+                           </thead>
+                           <tbody className="divide-y divide-gray-50">
+                               {filteredSellerStock.map(item => (
+                                   <tr key={item.id_seller_product} className="hover:bg-gray-50 transition-colors">
+                                       <td className="px-6 py-4">
+                                           <div className="flex items-center gap-3">
+                                               <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                   {item.product.photo_url && <img src={item.product.photo_url} className="w-full h-full object-cover" />}
+                                               </div>
+                                               <span className="font-medium text-gray-800">{item.product.name}</span>
+                                           </div>
+                                       </td>
+                                       <td className="px-6 py-4 text-center">
+                                           <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm">
+                                               {item.quantity} unid.
+                                           </span>
+                                       </td>
+                                       <td className="px-6 py-4 text-right font-mono font-bold text-gray-600">
+                                           {/* Aquí podrías calcular CUP real si tienes tasa, o mostrar USD */}
+                                            ${item.product.sale_price} <span className="text-xs text-gray-400">USD base</span>
+                                       </td>
+                                       <td className="px-6 py-4 text-right">
+                                           <button 
+                                             onClick={() => handleReturnStock(item)}
+                                             className="text-sm bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ml-auto"
+                                             title="Devolver al almacén principal"
+                                           >
+                                               <RefreshCw size={14} /> Devolver
+                                           </button>
+                                       </td>
+                                   </tr>
+                               ))}
+                           </tbody>
+                       </table>
+                   </div>
+               )}
+           </div>
+       )}
+
+       {/* MODALES */}
+       <ProductModal 
+         isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}
+         productToEdit={editingProduct} categories={categoriesData?.categories || []}
+         onSave={handleSave} isSaving={creating || updating}
+       />
+
+       <AssignmentModal 
+         isOpen={isAssignModalOpen} onClose={() => setIsAssignModalOpen(false)}
+         product={productToAssign} onAssign={handleAssign} isAssigning={assigning}
+       />
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Login.jsx
+============================================
+// src/pages/Login.jsx
+import { useForm } from 'react-hook-form';
+import { useMutation } from '@apollo/client';
+import { LOGIN_MUTATION } from '../graphql/auth';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+// 1. CAMBIO: Importamos ShoppingCart
+import { Loader2, Lock, Phone, ShoppingCart } from 'lucide-react';
+
+export default function Login() {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [loginMutation, { loading }] = useMutation(LOGIN_MUTATION);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
+    try {
+      const { data: response } = await loginMutation({
+        variables: { phone: data.phone, password: data.password }
+      });
+      const { token, user } = response.login;
+      login(token, user);
+      toast.success(`¡Bienvenido, ${user.name}!`);
+      navigate('/'); 
+    } catch (error) {
+      toast.error(error.message || 'Error al iniciar sesión');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        
+        {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
+        <div className="mx-auto h-20 w-20 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+            <ShoppingCart className="text-white h-10 w-10" />
+        </div>
+
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Habana Express Store
+        </h2>
+        {/* <p className="mt-2 text-center text-sm text-gray-600">
+          Acceso al sistema de gestión
+        </p> */}
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
+        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-2xl sm:px-10 border border-gray-100">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Número de Teléfono</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  {...register("phone", { required: "El teléfono es requerido" })}
+                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-xl p-3 border outline-none transition-all"
+                  placeholder="Ej: 50000001"
+                />
+              </div>
+              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="password"
+                  {...register("password", { required: "La contraseña es requerida" })}
+                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-xl p-3 border outline-none transition-all"
+                  placeholder="••••••"
+                />
+              </div>
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+            </div>
+
+            <div>
+              {/* 3. CAMBIO: Botón Rounded Full */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-lg shadow-blue-200 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all transform hover:-translate-y-0.5"
+              >
+                {loading ? (
+                   <><Loader2 className="animate-spin h-5 w-5 mr-2" /> Entrando...</>
+                ) : (
+                   "Iniciar Sesión"
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\POS.jsx
+============================================
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { useAuth } from '../context/AuthContext';
+import { GET_SELLER_PRODUCTS } from '../graphql/products'; // Solo esta query
+import { GET_CONFIG } from '../graphql/configuration';
+import { CREATE_SALE } from '../graphql/sales';
+import { Search, ShoppingCart, Trash2, Plus, Minus, CreditCard, Banknote, Loader2, Package, AlertCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+export default function POS() {
+  const { user } = useAuth();
+  
+  // Seguridad extra por si un Admin entra por URL directa
+  if (user.role === 'admin') {
+      return (
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <AlertCircle className="h-16 w-16 mb-4 text-red-400" />
+              <h2 className="text-xl font-bold">Modo Administrador</h2>
+              <p>Para vender, por favor crea un usuario Vendedor y accede con él.</p>
+              <p className="text-sm mt-2">Puedes gestionar las ventas en "Historial Ventas".</p>
+          </div>
+      );
+  }
+
+  // --- ESTADOS ---
+  const [searchTerm, setSearchTerm] = useState('');
+  const [cart, setCart] = useState([]);
+  const [buyerPhone, setBuyerPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+
+  // --- QUERIES ---
+  const { data: configData } = useQuery(GET_CONFIG);
+  const config = configData?.systemConfiguration?.[0];
+  const exchangeRate = config?.default_exchange_rate || 1;
+  const commissionPct = config?.seller_commission_percentage || 0;
+
+  // Carga SOLO productos del vendedor
+  const { data: sellerProds, loading, refetch } = useQuery(GET_SELLER_PRODUCTS, {
+    variables: { sellerId: parseInt(user.id_user) },
+    fetchPolicy: 'network-only'
+  });
+
+  const [createSale, { loading: processing }] = useMutation(CREATE_SALE, {
+     onCompleted: () => { refetch(); }
+  });
+
+  // --- PRODUCTOS DISPONIBLES ---
+  const availableProducts = useMemo(() => {
+      const rawList = sellerProds?.sellerProducts
+          ?.filter(sp => sp.quantity > 0) 
+          .map(sp => ({
+              id: sp.product.id_product,
+              name: sp.product.name,
+              price: sp.product.sale_price,
+              stock: sp.quantity,
+              photo: sp.product.photo_url
+          })) || [];
+
+      return rawList.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [sellerProds, searchTerm]);
+
+
+  // --- CARRITO ---
+  const addToCart = (product) => {
+    setCart(prev => {
+        const existing = prev.find(item => item.id === product.id);
+        if (existing) {
+            if (existing.qty >= product.stock) {
+                toast.error("Has alcanzado tu límite de stock asignado");
+                return prev;
+            }
+            return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+        }
+        return [...prev, { ...product, qty: 1 }];
+    });
+  };
+
+  const updateQty = (id, delta) => {
+      setCart(prev => prev.map(item => {
+          if (item.id === id) {
+              const newQty = item.qty + delta;
+              if (newQty > item.stock) {
+                  toast.error("Stock insuficiente");
+                  return item;
+              }
+              return newQty > 0 ? { ...item, qty: newQty } : item;
+          }
+          return item;
+      }));
+  };
+
+  const removeFromCart = (id) => setCart(prev => prev.filter(item => item.id !== id));
+
+  // --- CÁLCULOS ---
+  const totalCUP = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const estimatedCommission = totalCUP * (commissionPct / 100);
+
+  const handleCheckout = async () => {
+      if (cart.length === 0) return toast.error("Carrito vacío");
+      if (!buyerPhone) return toast.error("Ingresa el teléfono");
+
+      try {
+          await createSale({
+              variables: {
+                  sellerId: parseInt(user.id_user),
+                  exchange_rate: parseFloat(exchangeRate),
+                  total_cup: totalCUP,
+                  buyer_phone: buyerPhone,
+                  payment_method: paymentMethod,
+                  notes: "Venta POS",
+                  items: cart.map(i => ({ productId: i.id, quantity: i.qty }))
+              }
+          });
+          toast.success("✅ Venta registrada");
+          setCart([]);
+          setBuyerPhone('');
+      } catch (err) {
+          toast.error(err.message);
+      }
+  };
+
+  // --- RENDER (Igual que antes pero sin condicionales de admin) ---
+  return (
+    <div className="h-[calc(100vh-6rem)] flex flex-col md:flex-row gap-4 pb-2">
+       {/* IZQUIERDA: Grid de Productos */}
+       <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+             <h2 className="font-bold text-gray-800">Tu Inventario</h2>
+             <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
+                Tasa: ${exchangeRate}
+             </span>
+          </div>
+          
+          <div className="p-4 border-b border-gray-100">
+             <div className="relative">
+                <Search className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                <input 
+                    type="text" placeholder="Buscar..." 
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                />
+             </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50/30">
+             {loading ? <Loader2 className="animate-spin mx-auto mt-10 text-blue-500"/> : 
+              availableProducts.length === 0 ? <div className="text-center mt-10 text-gray-400">Sin productos asignados.</div> :
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                 {availableProducts.map(prod => (
+                    <div key={prod.id} onClick={() => addToCart(prod)} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:border-blue-300 cursor-pointer group">
+                       <div className="h-28 bg-gray-100 rounded-lg mb-2 relative overflow-hidden">
+                           {prod.photo ? <img src={prod.photo} className="w-full h-full object-cover"/> : <Package className="m-auto mt-8 text-gray-300"/>}
+                           <span className="absolute top-1 right-1 bg-black/60 text-white text-[10px] px-1 rounded">x{prod.stock}</span>
+                       </div>
+                       <h3 className="font-bold text-sm line-clamp-1">{prod.name}</h3>
+                       <p className="text-blue-600 font-bold">${prod.price}</p>
+                    </div>
+                 ))}
+              </div>
+             }
+          </div>
+       </div>
+
+       {/* DERECHA: Ticket (Sin cambios mayores, solo quitando lógica admin) */}
+       <div className="w-full md:w-80 bg-white rounded-2xl shadow-xl border border-gray-100 flex flex-col">
+           <div className="p-4 bg-blue-600 text-white rounded-t-2xl font-bold flex items-center">
+               <ShoppingCart className="mr-2 h-5 w-5"/> Ticket
+           </div>
+           
+           <div className="flex-1 overflow-y-auto p-4 space-y-2">
+               {cart.map(item => (
+                   <div key={item.id} className="flex justify-between items-center bg-gray-50 p-2 rounded-lg text-sm">
+                       <div className="flex-1">
+                           <div className="font-bold truncate w-32">{item.name}</div>
+                           <div className="text-blue-600 text-xs">${item.price * item.qty}</div>
+                       </div>
+                       <div className="flex items-center gap-1">
+                           <button onClick={() => updateQty(item.id, -1)} className="p-1 bg-white border rounded"><Minus size={12}/></button>
+                           <span className="w-4 text-center font-bold">{item.qty}</span>
+                           <button onClick={() => updateQty(item.id, 1)} className="p-1 bg-white border rounded"><Plus size={12}/></button>
+                       </div>
+                       <button onClick={() => removeFromCart(item.id)} className="text-red-400 ml-1"><Trash2 size={14}/></button>
+                   </div>
+               ))}
+           </div>
+
+           <div className="p-4 bg-gray-50 border-t space-y-3 rounded-b-2xl">
+               <input type="text" placeholder="Teléfono Cliente" className="w-full p-2 border rounded-lg text-sm" value={buyerPhone} onChange={e => setBuyerPhone(e.target.value)} />
+               
+               <div className="flex gap-2 text-xs">
+                   <button onClick={() => setPaymentMethod('cash')} className={`flex-1 py-2 rounded border ${paymentMethod==='cash'?'bg-green-100 border-green-300':'bg-white'}`}>Efectivo</button>
+                   <button onClick={() => setPaymentMethod('transfer')} className={`flex-1 py-2 rounded border ${paymentMethod==='transfer'?'bg-blue-100 border-blue-300':'bg-white'}`}>Transf.</button>
+               </div>
+
+               <div className="space-y-1 pt-2 border-t">
+                   <div className="flex justify-between text-green-600 text-xs font-bold">
+                       <span>Ganancia:</span><span>+${estimatedCommission.toFixed(0)}</span>
+                   </div>
+                   <div className="flex justify-between text-lg font-bold">
+                       <span>Total:</span><span className="text-blue-600">${totalCUP.toFixed(0)}</span>
+                   </div>
+               </div>
+
+               <button onClick={handleCheckout} disabled={processing || cart.length===0} className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50">
+                   {processing ? <Loader2 className="animate-spin mx-auto"/> : "COBRAR"}
+               </button>
+           </div>
+       </div>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Returns.jsx
+============================================
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_SALES, CREATE_RETURN } from '../graphql/sales';
+import { Search, RotateCcw, Package, AlertTriangle, Check, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+export default function Returns() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSale, setSelectedSale] = useState(null);
+  
+  // Modal State
+  const [returnItem, setReturnItem] = useState(null);
+  const [qty, setQty] = useState(1);
+  const [reason, setReason] = useState('');
+  const [returnToStock, setReturnToStock] = useState(true);
+
+  // Data
+  const { data, loading } = useQuery(GET_SALES);
+  const [createReturn, { loading: processing }] = useMutation(CREATE_RETURN);
+
+  // Filtrar solo ventas completadas
+  const sales = data?.sales?.filter(s => 
+    s.status === 'COMPLETED' && 
+    (s.id_sale.toString().includes(searchTerm) || s.buyer_phone.includes(searchTerm))
+  ) || [];
+
+  const handleOpenModal = (product, saleId) => {
+      setReturnItem({ ...product, saleId });
+      setQty(1);
+      setReason('');
+      setReturnToStock(true);
+  };
+
+  const handleProcessReturn = async () => {
+      if (!reason) return toast.error("Escribe un motivo");
+      
+      try {
+          await createReturn({
+              variables: {
+                  saleId: returnItem.saleId,
+                  productId: returnItem.id_product,
+                  quantity: parseInt(qty),
+                  reason,
+                  returnToStock
+              }
+          });
+          toast.success("Devolución procesada");
+          setReturnItem(null);
+      } catch (e) {
+          toast.error(e.message);
+      }
+  };
+
+  return (
+    <div className="pb-20">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <RotateCcw className="mr-3 text-blue-600" /> Gestión de Devoluciones
+      </h1>
+
+      {/* 1. BUSCADOR DE VENTAS */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+          <label className="text-sm font-bold text-gray-700 mb-2 block">Buscar Venta (ID o Teléfono Cliente)</label>
+          <div className="relative">
+              <Search className="absolute left-3 top-3 text-gray-400" />
+              <input 
+                  type="text" 
+                  placeholder="Ej: 55555555" 
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                  value={searchTerm}
+                  onChange={e => { setSearchTerm(e.target.value); setSelectedSale(null); }}
+              />
+          </div>
+          
+          {/* Resultados de Búsqueda */}
+          {searchTerm && (
+              <div className="mt-4 space-y-2">
+                  {sales.slice(0, 3).map(sale => (
+                      <div key={sale.id_sale} onClick={() => setSelectedSale(sale)} className="p-3 border rounded-lg hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
+                          <div>
+                              <span className="font-bold text-gray-800">Venta #{sale.id_sale}</span>
+                              <span className="mx-2 text-gray-300">|</span>
+                              <span className="text-sm text-gray-600">{sale.buyer_phone}</span>
+                          </div>
+                          <span className="text-blue-600 font-bold">${sale.total_cup}</span>
+                      </div>
+                  ))}
+                  {sales.length === 0 && <p className="text-sm text-gray-400 mt-2">No se encontraron ventas completadas.</p>}
+              </div>
+          )}
+      </div>
+
+      {/* 2. DETALLE DE LA VENTA SELECCIONADA */}
+      {selectedSale && (
+          <div className="bg-white rounded-2xl shadow-lg border border-blue-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+              <div className="bg-blue-50 px-6 py-4 border-b border-blue-100 flex justify-between">
+                  <h2 className="font-bold text-blue-800">Productos de Venta #{selectedSale.id_sale}</h2>
+                  <button onClick={() => setSelectedSale(null)} className="text-blue-400 hover:text-blue-600"><X size={20}/></button>
+              </div>
+              
+              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedSale.sale_products.map((item, idx) => (
+                      <div key={idx} className="border p-4 rounded-xl flex flex-col justify-between">
+                          <div>
+                              <h3 className="font-bold text-gray-800">{item.product.name}</h3>
+                              <p className="text-sm text-gray-500">Cantidad vendida: {item.quantity}</p>
+                          </div>
+                          <button 
+                              onClick={() => handleOpenModal(item.product, selectedSale.id_sale)}
+                              className="mt-4 w-full py-2 bg-orange-100 text-orange-700 font-bold rounded-lg hover:bg-orange-200 transition-colors flex items-center justify-center text-sm"
+                          >
+                              <RotateCcw size={16} className="mr-2"/> Devolver
+                          </button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      )}
+
+      {/* 3. MODAL DE PROCESAMIENTO */}
+      {returnItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in zoom-in">
+                  <h3 className="font-bold text-lg mb-4">Procesar Devolución</h3>
+                  <p className="text-sm text-gray-600 mb-4">Producto: <span className="font-bold">{returnItem.name}</span></p>
+
+                  <div className="space-y-4">
+                      <div>
+                          <label className="block text-sm font-bold text-gray-700 mb-1">Cantidad</label>
+                          <input type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} className="w-full p-2 border rounded-lg" />
+                      </div>
+                      
+                      <div>
+                          <label className="block text-sm font-bold text-gray-700 mb-1">Motivo</label>
+                          <textarea rows="2" value={reason} onChange={e => setReason(e.target.value)} placeholder="Ej: Defecto de fábrica, cliente insatisfecho..." className="w-full p-2 border rounded-lg resize-none"></textarea>
+                      </div>
+
+                      <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                          <label className="text-sm font-bold text-gray-700 mb-2 block">Estado del Producto</label>
+                          <div className="flex gap-2">
+                              <button 
+                                  onClick={() => setReturnToStock(true)}
+                                  className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-colors ${returnToStock ? 'bg-green-100 border-green-300 text-green-700' : 'bg-white text-gray-500'}`}
+                              >
+                                  <Check size={14} className="mx-auto mb-1"/> Funciona (Al Stock)
+                              </button>
+                              <button 
+                                  onClick={() => setReturnToStock(false)}
+                                  className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-colors ${!returnToStock ? 'bg-red-100 border-red-300 text-red-700' : 'bg-white text-gray-500'}`}
+                              >
+                                  <AlertTriangle size={14} className="mx-auto mb-1"/> Roto / Merma
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-6">
+                      <button onClick={() => setReturnItem(null)} className="px-4 py-2 text-gray-500 font-medium">Cancelar</button>
+                      <button onClick={handleProcessReturn} disabled={processing} className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
+                          {processing ? 'Procesando...' : 'Confirmar'}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      )}
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Sales.jsx
+============================================
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+// Asegúrate de que en graphql/sales.js tengas exportado CANCEL_SALE
+import { GET_SALES, UPDATE_SALE, CANCEL_SALE } from '../graphql/sales';
+import { Search, FileText, Edit2, Ban, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import SaleModal from '../components/sales/SaleModal';
+import toast from 'react-hot-toast';
+
+export default function Sales() {
+  const [search, setSearch] = useState('');
+  const [editingSale, setEditingSale] = useState(null);
+  
+  // 1. Carga de Datos (Polling cada 5s para ver actualizaciones de otros usuarios)
+  const { data, loading, error } = useQuery(GET_SALES, { 
+    pollInterval: 5000,
+    fetchPolicy: 'network-only' 
+  });
+  
+  // 2. Mutación de Actualizar (Editar notas, precio, etc.)
+  const [updateSale, { loading: updating }] = useMutation(UPDATE_SALE, {
+     refetchQueries: [{ query: GET_SALES }]
+  });
+  
+  // 3. Mutación de Anular (Reemplaza al antiguo Delete)
+  const [cancelSale] = useMutation(CANCEL_SALE, {
+     refetchQueries: [{ query: GET_SALES }]
+  });
+
+  // Filtros de Búsqueda (Vendedor, Teléfono o ID)
+  const sales = data?.sales?.filter(s => 
+     s.seller.name.toLowerCase().includes(search.toLowerCase()) || 
+     s.buyer_phone.includes(search) ||
+     s.id_sale.toString().includes(search)
+  ) || [];
+
+  // --- HANDLERS ---
+
+  const handleCancel = async (id) => {
+      if (window.confirm("⚠️ ¿ANULAR esta venta?\n\nEl stock será devuelto automáticamente al vendedor y al almacén. Esta acción es irreversible.")) {
+          try {
+              await cancelSale({ variables: { id_sale: id } });
+              toast.success("Venta anulada correctamente.");
+          } catch (e) {
+              console.error(e);
+              toast.error(e.message || "Error al anular venta");
+          }
+      }
+  };
+
+  const handleSave = async (formData) => {
+      try {
+          await updateSale({
+              variables: {
+                  id_sale: editingSale.id_sale,
+                  input: {
+                      total_cup: parseFloat(formData.total_cup),
+                      exchange_rate: parseFloat(formData.exchange_rate),
+                      buyer_phone: formData.buyer_phone,
+                      payment_method: formData.payment_method,
+                      notes: formData.notes
+                  }
+              }
+          });
+          toast.success("Venta actualizada");
+          setEditingSale(null);
+      } catch (e) {
+          toast.error(e.message);
+      }
+  };
+
+  // --- RENDERS DE ESTADO ---
+
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin h-10 w-10 text-blue-600"/></div>;
+  
+  if (error) return (
+    <div className="flex flex-col items-center justify-center p-10 text-red-500">
+        <AlertCircle className="h-10 w-10 mb-2"/>
+        <p className="font-bold">Error cargando ventas</p>
+        <p className="text-sm">{error.message}</p>
+        <p className="text-xs mt-2 text-gray-500">Intenta reiniciar el backend o ejecutar 'npx prisma db push'</p>
+    </div>
+  );
+
+  return (
+    <div className="pb-20 max-w-7xl mx-auto">
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <FileText className="mr-3 text-blue-600"/> Historial de Ventas
+                </h1>
+                <p className="text-gray-500 text-sm mt-1">
+                    Registro de operaciones y anulaciones.
+                </p>
+            </div>
+        </div>
+
+        {/* BUSCADOR */}
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+             <div className="relative">
+                 <Search className="absolute left-3 top-3 text-gray-400 h-5 w-5"/>
+                 <input 
+                   type="text" 
+                   placeholder="Buscar por ID, Vendedor o Teléfono Cliente..." 
+                   className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                   value={search} onChange={e => setSearch(e.target.value)}
+                 />
+             </div>
+        </div>
+
+        {/* LISTA DE VENTAS */}
+        <div className="space-y-3">
+            {sales.length === 0 && (
+                <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                    <p>No se encontraron ventas con ese criterio.</p>
+                </div>
+            )}
+
+            {sales.map(sale => {
+                const isCancelled = sale.status === 'CANCELLED';
+
+                return (
+                    <div 
+                        key={sale.id_sale} 
+                        className={`p-4 rounded-xl shadow-sm border transition-all duration-200 flex flex-col md:flex-row items-center justify-between gap-4 group 
+                        ${isCancelled ? 'bg-red-50/50 border-red-100 opacity-80' : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md'}`}
+                    >
+                        
+                        {/* 1. INFO IZQUIERDA: ID, Vendedor, Fecha */}
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                            <div className={`h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 
+                                ${isCancelled ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-600'}`}>
+                                {isCancelled ? <Ban size={20}/> : sale.seller.name.charAt(0)}
+                            </div>
+                            
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-mono text-xs text-gray-400 font-bold">#{sale.id_sale}</span>
+                                    {isCancelled && (
+                                        <span className="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide border border-red-200">
+                                            Anulada
+                                        </span>
+                                    )}
+                                </div>
+                                <p className={`font-bold leading-tight ${isCancelled ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
+                                    {sale.seller.name}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                    {new Date(Number(sale.sale_date)).toLocaleDateString()} • {new Date(Number(sale.sale_date)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 2. INFO CENTRO: Dinero */}
+                        <div className="text-left md:text-center w-full md:w-auto pl-16 md:pl-0">
+                            <p className={`text-xl font-extrabold ${isCancelled ? 'text-gray-400 line-through decoration-red-400' : 'text-blue-600'}`}>
+                                ${sale.total_cup} <span className="text-xs font-normal text-gray-400">CUP</span>
+                            </p>
+                            <div className="flex items-center md:justify-center gap-2 text-xs text-gray-500 font-medium">
+                                <span className="bg-gray-100 px-2 py-0.5 rounded">
+                                    {sale.payment_method === 'cash' ? 'Efectivo' : 'Transferencia'}
+                                </span>
+                                <span className="text-gray-300">|</span>
+                                <span>Tasa: {sale.exchange_rate}</span>
+                            </div>
+                        </div>
+
+                        {/* 3. INFO DERECHA: Cliente & Botones */}
+                        <div className="flex items-center justify-between w-full md:w-auto gap-6 pl-16 md:pl-0">
+                            <div className="text-left md:text-right">
+                                <p className="font-mono font-bold text-gray-700">{sale.buyer_phone}</p>
+                                <p className="text-xs text-gray-400 truncate max-w-[120px]" title={sale.notes}>
+                                    {sale.notes || "—"}
+                                </p>
+                            </div>
+
+                            <div className="flex gap-2">
+                                {/* Solo mostramos botones si NO está cancelada */}
+                                {!isCancelled ? (
+                                    <>
+                                        <button 
+                                            onClick={() => setEditingSale(sale)}
+                                            className="p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                                            title="Editar detalles (Notas, Método Pago)"
+                                        >
+                                            <Edit2 size={18} />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleCancel(sale.id_sale)}
+                                            className="p-2.5 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                            title="Anular Venta (Devolver Stock)"
+                                        >
+                                            <Ban size={18} />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="px-3 py-2 bg-gray-100 rounded-lg text-xs text-gray-400 font-bold italic select-none">
+                                        Cerrada
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
+                );
+            })}
+        </div>
+
+        {/* MODAL DE EDICIÓN */}
+        <SaleModal 
+            isOpen={!!editingSale}
+            onClose={() => setEditingSale(null)}
+            saleToEdit={editingSale}
+            onSave={handleSave}
+            isSaving={updating}
+        />
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Settings.jsx
+============================================
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_CONFIG, UPDATE_CONFIG } from '../graphql/configuration';
+import toast from 'react-hot-toast';
+import { Save, Building, Phone, Mail, DollarSign, Bot, Info, Loader2, Calendar, Clock, RefreshCw, FileText, Image as ImageIcon, UploadCloud } from 'lucide-react';
+import { TRIGGER_SYNC } from '../graphql/configuration';
+// --- HELPERS MEJORADOS ---
+
+const extractTimeFromISO = (rawDate) => {
+  if (!rawDate) return '';
+  
+  // 🔍 DEBUG: Mira la consola (F12) para ver qué está llegando
+  console.log("Valor recibido del Backend:", rawDate);
+
+  try {
+    // INTENTO 1: Crear objeto fecha estándar
+    // Prisma suele enviar timestamps numéricos (como strings) o ISO Strings
+    const date = new Date(Number(rawDate) || rawDate);
+
+    if (!isNaN(date.getTime())) {
+      // Si la fecha es válida, extraemos hora LOCAL
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+  } catch (e) {
+    console.warn("Fallo al convertir fecha standard", e);
+  }
+
+  // INTENTO 2 (FALLBACK): Manipulación de Texto
+  // Si llega algo como "2024-01-01T08:00:00.000Z" o simplemente "08:00:00"
+  if (typeof rawDate === 'string') {
+     // Si tiene una 'T', cortamos después de ella
+     if (rawDate.includes('T')) {
+         const timePart = rawDate.split('T')[1];
+         // Tomamos los primeros 5 caracteres (HH:mm)
+         return timePart.substring(0, 5); 
+     }
+     // Si ya parece una hora "08:00:00", devolvemos los primeros 5
+     if (rawDate.includes(':')) {
+         return rawDate.substring(0, 5);
+     }
+  }
+
+  return '';
+};
+
+// Convierte "HH:mm" a Fecha ISO completa para guardar
+const timeStringToISO = (timeString) => {
+  if (!timeString) return null;
+  const [hours, minutes] = timeString.split(':');
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  return date.toISOString();
+};
+
+export default function Settings() {
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
+  const [configId, setConfigId] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const currentLogo = watch('logo_url');
+  
+
+// 1. Obtener datos
+  const { data, loading, error } = useQuery(GET_CONFIG, {
+    fetchPolicy: 'network-only',
+    onCompleted: (data) => {
+      if (data?.systemConfiguration?.length > 0) {
+        const config = data.systemConfiguration[0];
+        setConfigId(config.id_config);
+
+        // Campos de texto simples
+        setValue('company_name', config.company_name);
+        setValue('company_phone', config.company_phone || '');
+        setValue('company_email', config.company_email || '');
+        setValue('description', config.description || '');
+        setValue('telegram_bot_token', config.telegram_bot_token || '');
+        setValue('logo_url', config.logo_url || '');
+
+        // Campos numéricos
+        setValue('seller_commission_percentage', config.seller_commission_percentage);
+        setValue('default_exchange_rate', config.default_exchange_rate);
+        setValue('monthly_report_day', config.monthly_report_day || 20);
+        setValue('annual_report_day', config.annual_report_day || 20);
+
+         // 🕒 AQUI: Asegúrate que esté así:
+        if (config.exchange_rate_sync_time) {
+            const time = extractTimeFromISO(config.exchange_rate_sync_time);
+            setValue('exchange_rate_sync_time', time, { shouldValidate: true });
+        }
+        if (config.monthly_report_time) {
+            const time = extractTimeFromISO(config.monthly_report_time);
+            setValue('monthly_report_time', time, { shouldValidate: true });
+        }
+        if (config.annual_report_time) {
+            const time = extractTimeFromISO(config.annual_report_time);
+            setValue('annual_report_time', time, { shouldValidate: true });
+        }
+      }
+    }
+  });
+
+const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
+
+  const handleManualSync = async () => {
+      try {
+          await triggerSync();
+          toast.success("✅ Precios actualizados con la tasa de hoy");
+      } catch (e) {
+          toast.error("Error al sincronizar");
+      }
+  };
+
+  const [updateConfig, { loading: saving }] = useMutation(UPDATE_CONFIG);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast.error('Solo se permiten archivos de imagen (JPG, PNG)');
+        return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        // Asegúrate que el puerto coincida con tu backend (4000)
+        const response = await fetch('http://localhost:4000/api/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) throw new Error('Error de red al subir imagen');
+
+        const data = await response.json();
+        setValue('logo_url', data.url); 
+        toast.success('Logo subido correctamente');
+
+    } catch (error) {
+        console.error(error);
+        toast.error('No se pudo subir la imagen. Verifica el servidor.');
+    } finally {
+        setIsUploading(false);
+    }
+  };
+
+  const onSubmit = async (formData) => {
+    try {
+      if (!configId) {
+        toast.error("Error: No se encontró configuración para actualizar.");
+        return;
+      }
+
+      const input = {
+        company_name: formData.company_name,
+        company_phone: formData.company_phone,
+        company_email: formData.company_email,
+        description: formData.description,
+        telegram_bot_token: formData.telegram_bot_token,
+        logo_url: formData.logo_url,
+        active: true,
+
+        seller_commission_percentage: parseFloat(formData.seller_commission_percentage),
+        default_exchange_rate: parseFloat(formData.default_exchange_rate),
+        monthly_report_day: parseInt(formData.monthly_report_day),
+        annual_report_day: parseInt(formData.annual_report_day),
+
+        exchange_rate_sync_time: timeStringToISO(formData.exchange_rate_sync_time),
+        monthly_report_time: timeStringToISO(formData.monthly_report_time),
+        annual_report_time: timeStringToISO(formData.annual_report_time),
+      };
+
+      await updateConfig({
+        variables: { id_config: configId, input }
+      });
+
+      toast.success('¡Configuración guardada exitosamente!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Error al guardar: ' + err.message);
+    }
+  };
+
+  if (loading) return <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-blue-600 h-10 w-10" /></div>;
+  if (error) return <div className="p-4 bg-red-50 text-red-600 rounded-lg text-center mt-10">Error cargando configuración. Verifica que el servidor Backend esté activo (Puerto 4000).</div>;
+
+  return (
+    <div className="max-w-5xl mx-auto pb-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Configuración del Sistema</h1>
+        <p className="text-gray-500 mt-1">Personaliza la identidad y reglas de negocio.</p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        
+        {/* === SECCIÓN 1: IDENTIDAD === */}
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center pb-2 border-b border-gray-50">
+            <Building className="mr-2 text-blue-500" size={24} /> Identidad Corporativa
+          </h2>
+          
+          <div className="flex flex-col md:flex-row gap-8">
+            
+            {/* AREA DEL LOGO */}
+            <div className="w-full md:w-1/3 flex flex-col items-center">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 self-start w-full text-center md:text-left">Logo de la Tienda</label>
+                
+                <div className="relative group w-48 h-48 rounded-full border-4 border-gray-100 shadow-sm overflow-hidden bg-gray-50 flex items-center justify-center hover:border-blue-200 transition-colors">
+                    {isUploading ? (
+                        <div className="flex flex-col items-center">
+                            <Loader2 className="animate-spin text-blue-500 h-8 w-8 mb-2" />
+                            <span className="text-xs text-gray-400">Subiendo...</span>
+                        </div>
+                    ) : currentLogo ? (
+                        <>
+                            <img src={currentLogo} alt="Logo" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <UploadCloud className="text-white h-8 w-8 mb-1" />
+                                <span className="text-white text-xs font-medium">Cambiar</span>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center text-gray-400">
+                            <ImageIcon className="h-12 w-12 mb-2" />
+                            <span className="text-xs text-center px-2">Click para subir</span>
+                        </div>
+                    )}
+
+                    <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        disabled={isUploading}
+                    />
+                </div>
+                <input type="hidden" {...register('logo_url')} />
+            </div>
+
+            {/* CAMPOS DE TEXTO */}
+            <div className="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre de la Tienda *</label>
+                    <input 
+                        {...register('company_name', { required: "Requerido" })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    />
+                    {errors.company_name && <span className="text-xs text-red-500">{errors.company_name.message}</span>}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center"><Phone size={16} className="mr-2 text-gray-400"/> Teléfono</label>
+                    <input {...register('company_phone')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center"><Mail size={16} className="mr-2 text-gray-400"/> Email</label>
+                    <input {...register('company_email')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+
+                <div className="col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Visión</label>
+                    <textarea {...register('description')} rows={2} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
+                </div>
+            </div>
+          </div>
+        </div>
+
+        {/* === SECCIÓN 2: FINANZAS === */}
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center pb-2 border-b border-gray-50">
+            <DollarSign className="mr-2 text-green-500" size={24} /> Reglas Financieras
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-green-50/50 p-5 rounded-xl border border-green-100">
+              <label className="block text-sm font-bold text-gray-800 mb-2">Tasa de Cambio Base (CUP)</label>
+              <div className="relative">
+                <input type="number" step="0.01" {...register('default_exchange_rate', { required: true })} className="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none font-bold text-xl" />
+                <span className="absolute left-3 top-3.5 text-green-600 font-bold">$</span>
+              </div>
+            </div>
+
+            <div className="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
+              <label className="block text-sm font-bold text-gray-800 mb-2">Comisión Vendedores (%)</label>
+              <div className="relative">
+                <input type="number" step="0.01" {...register('seller_commission_percentage', { required: true })} className="w-full pl-4 pr-8 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-xl" />
+                <span className="absolute right-3 top-3.5 text-blue-600 font-bold">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* === SECCIÓN 3: AUTOMATIZACIÓN === */}
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center pb-2 border-b border-gray-50">
+            <RefreshCw className="mr-2 text-purple-500" size={24} /> Automatización
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* <div className="lg:col-span-1 space-y-4">
+              <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
+                <RefreshCw size={16} className="mr-2" /> Sync Tasa
+              </h3>
+              <div className="relative">
+                <input type="time" {...register('exchange_rate_sync_time')} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none" />
+                <Clock size={16} className="absolute left-3 top-3 text-gray-400" />
+              </div>
+            </div> */}
+
+             <div className="lg:col-span-1 space-y-4">
+              <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
+                <RefreshCw size={16} className="mr-2" /> Sync Tasa
+              </h3>
+              
+              <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input type="time" {...register('exchange_rate_sync_time')} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none" />
+                    <Clock size={16} className="absolute left-3 top-3 text-gray-400" />
+                  </div>
+                  
+                  {/* 👇 BOTÓN MANUAL AÑADIDO 👇 */}
+                  <button 
+                    type="button" 
+                    onClick={handleManualSync}
+                    disabled={syncing}
+                    className="bg-purple-100 hover:bg-purple-200 text-purple-700 p-2 rounded-lg transition-colors"
+                    title="Actualizar precios ahora"
+                  >
+                    <RefreshCw size={20} className={syncing ? "animate-spin" : ""} />
+                  </button>
+              </div>
+              <p className="text-[10px] text-gray-400">Hora automática o click para manual.</p>
+            </div>
+
+            <div className="lg:col-span-1 space-y-4 border-l border-gray-100 lg:pl-6">
+              <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
+                <FileText size={16} className="mr-2" /> Reporte Mensual
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="number" min="1" max="28" {...register('monthly_report_day')} placeholder="Día" className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+                <input type="time" {...register('monthly_report_time')} className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+              </div>
+            </div>
+
+            <div className="lg:col-span-1 space-y-4 border-l border-gray-100 lg:pl-6">
+              <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
+                <Calendar size={16} className="mr-2" /> Reporte Anual
+              </h3>
+               <div className="grid grid-cols-2 gap-3">
+                <input type="number" min="1" max="31" {...register('annual_report_day')} placeholder="Día" className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+                <input type="time" {...register('annual_report_time')} className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* === SECCIÓN 4: TELEGRAM === */}
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center pb-2 border-b border-gray-50">
+            <Bot className="mr-2 text-blue-400" size={24} /> Telegram Bot
+          </h2>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Bot API Token</label>
+            <div className="flex">
+                <input type="password" {...register('telegram_bot_token')} className="w-full px-4 py-3 rounded-l-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" />
+                <div className="bg-gray-50 px-4 flex items-center border border-l-0 border-gray-200 rounded-r-xl text-gray-500"><Info size={18} /></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-4 sticky bottom-6 z-10">
+          <button type="submit" disabled={saving || isUploading} className="flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg transition-all disabled:opacity-70 transform hover:-translate-y-1">
+            {(saving || isUploading) ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" size={20} />}
+            {isUploading ? 'Subiendo...' : saving ? 'Guardando...' : 'Guardar Configuración'}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Shipments.jsx
+============================================
+// src/pages/Shipments.jsx
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_SHIPMENTS, CREATE_SHIPMENT, UPDATE_SHIPMENT, DELETE_SHIPMENT } from '../graphql/shipments';
+import { Truck, Plus, Edit2, Trash2, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import ShipmentModal from '../components/shipments/ShipmentModal';
+import toast from 'react-hot-toast';
+
+export default function Shipments() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingShipment, setEditingShipment] = useState(null);
+
+  const { data, loading, error } = useQuery(GET_SHIPMENTS);
+
+  const [createShipment, { loading: creating }] = useMutation(CREATE_SHIPMENT, {
+    refetchQueries: [{ query: GET_SHIPMENTS }]
+  });
+  const [updateShipment, { loading: updating }] = useMutation(UPDATE_SHIPMENT, {
+    refetchQueries: [{ query: GET_SHIPMENTS }]
+  });
+  const [deleteShipment] = useMutation(DELETE_SHIPMENT, {
+    refetchQueries: [{ query: GET_SHIPMENTS }]
+  });
+
+  const handleOpenCreate = () => {
+    setEditingShipment(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (shipment) => {
+    setEditingShipment(shipment);
+    setIsModalOpen(true);
+  };
+
+  // Helper para mostrar fechas en la lista
+const getDisplayDate = (rawDate) => {
+  const date = new Date(Number(rawDate) || rawDate);
+  if (isNaN(date.getTime())) {
+    return { day: '--', month: '---', year: '----' };
+  }
+  return {
+    day: date.getDate(),
+    month: date.toLocaleString('es-ES', { month: 'short' }),
+    year: date.getFullYear()
+  };
+};
+
+  const handleDelete = async (id) => {
+    if (confirm('¿Eliminar este envío? Se perderá el registro de costos.')) {
+      try {
+        await deleteShipment({ variables: { id_shipment: id } });
+        toast.success('Envío eliminado');
+      } catch (e) {
+        toast.error('Error: ' + e.message);
+      }
+    }
+  };
+
+  const handleSave = async (data) => {
+    
+        // Preparamos el objeto con los datos
+    const shipmentInput = {
+      agency_name: data.agency_name,
+      shipment_date: new Date(data.shipment_date).toISOString(),
+      shipping_cost_usd: parseFloat(data.shipping_cost_usd),
+      merchandise_cost_usd: parseFloat(data.merchandise_cost_usd),
+      customs_fee_cup: parseFloat(data.customs_fee_cup),
+      exchange_rate: parseFloat(data.exchange_rate),
+      notes: data.notes
+    };
+
+    try {
+      if (editingShipment) {
+        // CORRECCIÓN AQUÍ: Pasamos 'input' como objeto
+        await updateShipment({
+          variables: { 
+            id_shipment: editingShipment.id_shipment, 
+            input: shipmentInput // <--- Empaquetado dentro de input
+          }
+        });
+        toast.success('Envío actualizado');
+
+        
+      } else {
+        await createShipment({ variables: shipmentInput });
+        toast.success('Envío registrado');
+      }
+      setIsModalOpen(false);
+    } catch (e) {
+      toast.error('Error: ' + e.message);
+    }
+  };
+
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-blue-600" /></div>;
+  if (error) return <p className="text-center text-red-500 p-10">Error cargando envíos</p>;
+
+  return (
+    <div className="pb-20">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+            <Truck className="mr-3 text-blue-600" /> Gestión de Envíos
+          </h1>
+          <p className="text-gray-500 text-sm">Control de importaciones y costos.</p>
+        </div>
+        <button onClick={handleOpenCreate} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg flex items-center transition-transform active:scale-95">
+          <Plus className="mr-2 h-5 w-5" /> Nuevo Envío
+        </button>
+      </div>
+
+      {/* --- LISTA SIMPLIFICADA (Responsive) --- */}
+      <div className="space-y-4">
+        {data?.shipments?.length === 0 && (
+           <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl">
+             <AlertCircle className="mx-auto text-gray-300 h-10 w-10 mb-2" />
+             <p className="text-gray-500">No hay envíos registrados.</p>
+           </div>
+        )}
+
+         {data?.shipments?.map((item) => {
+          // Usamos el helper aquí
+          const dateData = getDisplayDate(item.shipment_date);
+
+          return (
+            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+              
+              <div className="flex items-center gap-4">
+                 {/* Icono Fecha corregido */}
+                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100">
+                    <span>{dateData.day}</span>
+                    <span className="uppercase">{dateData.month}</span>
+                 </div>
+                 
+                 {/* Datos Principales */}
+                 <div>
+                   <h3 className="font-bold text-gray-800 text-lg">{item.agency_name}</h3>
+                   <div className="flex items-center text-gray-500 text-sm">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {dateData.year}
+                      <span className="mx-2">•</span>
+                      <span className="text-gray-400 italic text-xs truncate max-w-[150px]">{item.notes || 'Sin notas'}</span>
+                   </div>
+                 </div>
+              </div>
+
+              {/* Acciones */}
+              <div className="flex gap-2">
+                <button onClick={() => handleOpenEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                   <Edit2 size={20} />
+                </button>
+                <button onClick={() => handleDelete(item.id_shipment)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                   <Trash2 size={20} />
+                </button>
+              </div>
+
+            </div>
+          );
+        })}
+
+
+
+      </div>
+
+      <ShipmentModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        shipmentToEdit={editingShipment}
+        onSave={handleSave}
+        isSaving={creating || updating}
+      />
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Users.jsx
+============================================
+// src/pages/Users.jsx
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_USERS, CREATE_USER, UPDATE_USER, DELETE_USER } from '../graphql/users';
+import { Plus, Search, Edit2, Trash2, Shield, User as UserIcon, Loader2, AlertCircle } from 'lucide-react';
+import UserModal from '../components/users/UserModal';
+import toast from 'react-hot-toast';
+import clsx from 'clsx';
+
+export default function Users() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+
+  const { data, loading, error } = useQuery(GET_USERS);
+  
+  const [createUser, { loading: creating }] = useMutation(CREATE_USER, {
+    refetchQueries: [{ query: GET_USERS }]
+  });
+
+  const [updateUser, { loading: updating }] = useMutation(UPDATE_USER, {
+    refetchQueries: [{ query: GET_USERS }]
+  });
+
+  const [deleteUser] = useMutation(DELETE_USER, {
+    refetchQueries: [{ query: GET_USERS }]
+  });
+
+  // Filtrado (Por nombre o teléfono)
+  const filteredUsers = data?.users?.filter(u => 
+     u.active && // Solo activos
+     (u.name.toLowerCase().includes(searchTerm.toLowerCase()) || u.phone.includes(searchTerm))
+  ) || [];
+
+  const handleOpenCreate = () => {
+    setEditingUser(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (user) => {
+    setEditingUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (user) => {
+    if (window.confirm(`¿Desactivar usuario "${user.name}"?`)) {
+       try {
+         await deleteUser({ variables: { id_user: user.id_user } });
+         toast.success('Usuario desactivado');
+       } catch (e) {
+         toast.error(e.message);
+       }
+    }
+  };
+
+  
+const handleSave = async (data) => {
+    try {
+        if (editingUser) {
+            // --- MODO EDICIÓN ---
+            // Aquí SÍ podemos mandar 'active' si actualizamos el schema UpdateUserInput
+            // Pero para estar seguros, mandamos solo lo necesario.
+            const input = {
+                name: data.name,
+                phone: data.phone,
+                email: data.email || null,
+                photo_url: data.photo_url || null,
+                telegram_chat_id: data.telegram_chat_id || null,
+                role: data.role,
+                active: true 
+            };
+            
+            if (data.password) input.password = data.password;
+
+            await updateUser({
+                variables: { id_user: editingUser.id_user, input }
+            });
+            toast.success('Usuario actualizado');
+
+        } else {
+            // --- MODO CREACIÓN (Aquí estaba el error 400) ---
+            
+            // 1. NO mandamos 'active' (la base de datos lo pone true por defecto).
+            // 2. Mapeamos 'password' del formulario a 'password_hash' que pide el backend.
+            const createInput = {
+                name: data.name,
+                phone: data.phone,
+                role: data.role,
+                password_hash: data.password, // Requerido
+                
+                // Opcionales: Si están vacíos, mandamos undefined para que GraphQL no se queje
+                email: data.email || undefined,
+                photo_url: data.photo_url || undefined,
+                telegram_chat_id: data.telegram_chat_id || undefined
+            };
+
+            await createUser({ variables: { input: createInput } });
+            toast.success('Usuario creado');
+        }
+        setIsModalOpen(false);
+    } catch (e) {
+        console.error("Error al guardar:", e);
+        // Esto te mostrará el detalle exacto del error en la alerta
+        toast.error(e.message); 
+    }
+  };
+
+
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
+  if (error) return <p className="text-red-500 text-center p-10">Error cargando usuarios.</p>;
+
+  return (
+    <div className="pb-20">
+       {/* HEADER */}
+       <div className="flex flex-col md:flex-row justify-between gap-4 mb-8">
+         <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                <UserIcon className="mr-3 text-blue-600" /> Usuarios
+            </h1>
+            <p className="text-gray-500 text-sm">Gestiona el acceso del personal.</p>
+         </div>
+         <button onClick={handleOpenCreate} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg flex items-center justify-center transition-transform active:scale-95">
+            <Plus className="mr-2 h-5 w-5" /> Nuevo Usuario
+         </button>
+       </div>
+
+       {/* SEARCH */}
+       <div className="relative mb-6">
+          <Search className="absolute left-4 top-3.5 text-gray-400 h-5 w-5" />
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre o teléfono..." 
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+       </div>
+
+       {/* LISTA */}
+       <div className="grid grid-cols-1 gap-4">
+          {filteredUsers.map(user => (
+             <div key={user.id_user} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                {/* INFO */}
+                <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-full bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200">
+                        {user.photo_url ? (
+                            <img src={user.photo_url} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <UserIcon className="h-full w-full p-3 text-gray-400" />
+                        )}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-gray-800 text-lg leading-tight">{user.name}</h3>
+                        <div className="flex items-center gap-2 text-sm mt-1">
+                            <span className={clsx(
+                                "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide",
+                                user.role === 'admin' ? "bg-purple-100 text-purple-700" :
+                                user.role === 'storekeeper' ? "bg-orange-100 text-orange-700" :
+                                "bg-blue-100 text-blue-700"
+                            )}>
+                                {user.role === 'storekeeper' ? 'Almacén' : user.role === 'seller' ? 'Vendedor' : 'Admin'}
+                            </span>
+                            <span className="text-gray-400">•</span>
+                            <span className="text-gray-600 font-mono">{user.phone}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ACCIONES */}
+                <div className="flex items-center gap-2 self-end md:self-auto">
+                    <button onClick={() => handleOpenEdit(user)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                        <Edit2 size={20} />
+                    </button>
+                    {/* No permitir borrar Admin o a uno mismo se podría validar aquí también */}
+                    <button onClick={() => handleDelete(user)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 size={20} />
+                    </button>
+                </div>
+             </div>
+          ))}
+
+          {filteredUsers.length === 0 && (
+             <div className="text-center py-10 text-gray-400">
+                <AlertCircle className="mx-auto h-10 w-10 mb-2 opacity-50" />
+                No se encontraron usuarios activos.
+             </div>
+          )}
+       </div>
+
+       <UserModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          userToEdit={editingUser}
+          onSave={handleSave}
+          isSaving={creating || updating}
+          isAdmin={true} // Estamos en el panel de admin
+       />
+    </div>
+  );
+}.
+.

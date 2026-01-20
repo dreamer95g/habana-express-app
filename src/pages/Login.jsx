@@ -5,7 +5,8 @@ import { LOGIN_MUTATION } from '../graphql/auth';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Loader2, Lock, Phone } from 'lucide-react';
+// 1. CAMBIO: Importamos ShoppingCart
+import { Loader2, Lock, Phone, ShoppingCart } from 'lucide-react';
 
 export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -18,13 +19,10 @@ export default function Login() {
       const { data: response } = await loginMutation({
         variables: { phone: data.phone, password: data.password }
       });
-
       const { token, user } = response.login;
-      
       login(token, user);
       toast.success(`¡Bienvenido, ${user.name}!`);
-      navigate('/'); // Ir al Dashboard
-
+      navigate('/'); 
     } catch (error) {
       toast.error(error.message || 'Error al iniciar sesión');
     }
@@ -33,23 +31,24 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        {/* LOGO SIMULADO */}
-        <div className="mx-auto h-16 w-16 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-            <span className="text-white font-bold text-2xl">HX</span>
+        
+        {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
+        <div className="mx-auto h-20 w-20 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+            <ShoppingCart className="text-white h-10 w-10" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-primary-900">
+
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Habana Express Store
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        {/* <p className="mt-2 text-center text-sm text-gray-600">
           Acceso al sistema de gestión
-        </p>
+        </p> */}
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
+        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-2xl sm:px-10 border border-gray-100">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             
-            {/* CAMPO TELÉFONO */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Número de Teléfono</label>
               <div className="mt-1 relative rounded-md shadow-sm">
@@ -59,14 +58,13 @@ export default function Login() {
                 <input
                   type="text"
                   {...register("phone", { required: "El teléfono es requerido" })}
-                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md p-2.5 border"
+                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-xl p-3 border outline-none transition-all"
                   placeholder="Ej: 50000001"
                 />
               </div>
               {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
             </div>
 
-            {/* CAMPO PASSWORD */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Contraseña</label>
               <div className="mt-1 relative rounded-md shadow-sm">
@@ -76,19 +74,19 @@ export default function Login() {
                 <input
                   type="password"
                   {...register("password", { required: "La contraseña es requerida" })}
-                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md p-2.5 border"
+                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-xl p-3 border outline-none transition-all"
                   placeholder="••••••"
                 />
               </div>
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
             </div>
 
-            {/* BOTÓN SUBMIT */}
             <div>
+              {/* 3. CAMBIO: Botón Rounded Full */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-colors"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-lg shadow-blue-200 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all transform hover:-translate-y-0.5"
               >
                 {loading ? (
                    <><Loader2 className="animate-spin h-5 w-5 mr-2" /> Entrando...</>

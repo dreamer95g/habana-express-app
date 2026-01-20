@@ -30,3 +30,9 @@ export const UPDATE_CONFIG = gql`
     }
   }
 `;
+
+export const TRIGGER_SYNC = gql`
+  mutation TriggerPriceSync {
+    triggerPriceSync
+  }
+`;

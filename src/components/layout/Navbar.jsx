@@ -4,10 +4,51 @@ import { Menu, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
 
+import { useMutation } from '@apollo/client';
+import { UPDATE_USER } from '../../graphql/users';
+import UserModal from '../users/UserModal';
+import toast from 'react-hot-toast';
+
+
 export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+   const [updateUser, { loading: updating }] = useMutation(UPDATE_USER);
+
+
+    const handleSelfUpdate = async (data) => {
+    try {
+        const input = {
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            photo_url: data.photo_url,
+            telegram_chat_id: data.telegram_chat_id,
+            // NO enviamos rol
+        };
+        if (data.password) input.password = data.password;
+
+        const res = await updateUser({
+            variables: { id_user: user.id_user, input }
+        });
+
+        // IMPORTANTE: Actualizar el contexto de Auth para que se refresque la foto/nombre en el Navbar
+        // Aquí asumimos que updateAuth es una función que agregaremos al contexto, 
+        // O simplemente forzamos un reload o actualizamos el localStorage manualmente.
+        // Por simplicidad ahora:
+        const updatedUser = { ...user, ...res.data.updateUser };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload(); // Recarga rápida para aplicar cambios en toda la app
+        
+        toast.success('Perfil actualizado');
+        setIsProfileModalOpen(false);
+    } catch (e) {
+        toast.error(e.message);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -64,16 +105,46 @@ export default function Navbar({ onMenuClick }) {
         )}>
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                 <p className="text-xs text-gray-500 uppercase font-semibold">Cuenta</p>
-                <p className="text-sm font-bold text-gray-900 truncate mt-1">{user?.phone}</p>
+                {/* <p className="text-sm font-bold text-gray-900 truncate mt-1">{user?.phone}</p> */}
+                <p className="text-sm font-bold text-gray-900 truncate mt-1">
+                    {user?.phone || 'Sin teléfono'}
+                </p>
             </div>
-            
+
             <div className="py-1">
+              {/* Botón Editar Perfil */}
+              <button 
+                onClick={() => {
+                    setIsDropdownOpen(false); // Cerrar dropdown
+                    setIsProfileModalOpen(true); // Abrir modal
+                }} 
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              >
+                  Editar Perfil
+              </button>
+              
               <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
                   Salir del sistema
               </button>
             </div>
+            
+            {/* <div className="py-1">
+              <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                  Salir del sistema
+              </button>
+            </div> */}
         </div>
       </div>
+
+       <UserModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        userToEdit={user} // Pasamos el usuario actual del AuthContext
+        onSave={handleSelfUpdate}
+        isSaving={updating}
+        isSelfEdit={true} // Activa el modo "Mi Perfil"
+        isAdmin={user?.role === 'admin'} // Solo para saber si puede ver roles (aunque selfEdit lo deshabilita)
+      />
     </header>
   );
 }
