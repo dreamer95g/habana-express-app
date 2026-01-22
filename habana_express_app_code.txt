@@ -1,4 +1,9 @@
 ============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\.env
+============================================
+VITE_API_URL=http://localhost:4000
+
+============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\eslint.config.js
 ============================================
 import js from '@eslint/js'
@@ -505,17 +510,16 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\clie
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
-// 1. Configuración del enlace HTTP (Tu Backend)
+// 1. Configuración del enlace HTTP (Dinámico)
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: `${apiUrl}/graphql`, // Se conecta a /graphql
 });
 
 // 2. Middleware de Autenticación
 const authLink = setContext((_, { headers }) => {
-  // Obtener el token del almacenamiento local de manera segura
   const token = localStorage.getItem('token');
-  
-  // Retornar los headers con el token adjunto si existe
   return {
     headers: {
       ...headers,
@@ -530,7 +534,7 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'network-only', // Evita caché agresiva en desarrollo
+      fetchPolicy: 'network-only',
     },
   },
 });.
@@ -875,18 +879,15 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
   // Seller ve: Vender (POS).
   const menus = [
     { name: 'Inicio', path: '/', icon: LayoutDashboard, roles: ['admin', 'seller', 'storekeeper'] },
-    // { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller', 'admin'] },
-   // 👈 CAMBIO: "Vender" (POS) SOLO para Sellers
-    { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller'] }, 
+   { name: 'Inventario', path: '/inventory', icon: Package, roles: ['storekeeper', 'admin'] },
+  { name: 'Categorías', path: '/categories', icon: Tag, roles: [ 'admin'] },
+  { name: 'Devoluciones', path: '/returns', icon: RotateCcw, roles: ['admin', 'storekeeper'] },  
+  { name: 'Vender', path: '/pos', icon: ShoppingBag, roles: ['seller'] }, 
+  { name: 'Historial Ventas', path: '/sales', icon: FileText, roles: ['admin'] },
     
-    // 👈 CAMBIO: "Historial Ventas" SOLO para Admin 
-    { name: 'Historial Ventas', path: '/sales', icon: FileText, roles: ['admin'] },
-   
-    { name: 'Inventario', path: '/inventory', icon: Package, roles: ['storekeeper', 'admin'] },
-    { name: 'Categorías', path: '/categories', icon: Tag, roles: [ 'admin'] },
     { name: 'Envíos', path: '/shipments', icon: Truck, roles: ['admin'] },
     { name: 'Usuarios', path: '/users', icon: Users, roles: ['admin'] },
-   { name: 'Devoluciones', path: '/returns', icon: RotateCcw, roles: ['admin', 'storekeeper'] },
+   
     { name: 'Configuración', path: '/settings', icon: Settings, roles: ['admin'] },
   ];
 
@@ -1636,7 +1637,6 @@ export default function ShipmentModal({ isOpen, onClose, shipmentToEdit, onSave,
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\ui\ImageDropzone.jsx
 ============================================
-// src/components/ui/ImageDropzone.jsx
 import { useState } from 'react';
 import { UploadCloud, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -1670,7 +1670,8 @@ export default function ImageDropzone({ value, onChange, className }) {
       if (!res.ok) throw new Error('Error subiendo imagen');
 
       const data = await res.json();
-      onChange(data.url); // Pasamos la URL al padre (Formulario)
+      // data.url ahora será la URL de Cloudinary (https://res.cloudinary...)
+      onChange(data.url); 
       toast.success('Foto subida');
     } catch (error) {
       console.error(error);
@@ -1681,14 +1682,13 @@ export default function ImageDropzone({ value, onChange, className }) {
   };
 
   const handleRemove = (e) => {
-    e.preventDefault(); // Evitar abrir el selector de archivos
+    e.preventDefault(); 
     onChange('');
   };
 
   return (
     <div className={`relative group w-32 h-32 rounded-full border-4 border-dashed border-gray-200 overflow-hidden bg-gray-50 hover:border-blue-400 transition-colors cursor-pointer ${className}`}>
       
-      {/* Input invisible que cubre todo */}
       <input 
         type="file" 
         accept="image/*" 
@@ -1697,7 +1697,6 @@ export default function ImageDropzone({ value, onChange, className }) {
         className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
       />
 
-      {/* CONTENIDO VISUAL */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         {isUploading ? (
           <div className="flex flex-col items-center text-blue-500">
@@ -1707,7 +1706,6 @@ export default function ImageDropzone({ value, onChange, className }) {
         ) : value ? (
           <>
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
-            {/* Overlay para cambiar */}
             <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                <UploadCloud className="text-white h-8 w-8" />
                <span className="text-white text-[10px] font-bold mt-1">CAMBIAR</span>
@@ -1721,7 +1719,6 @@ export default function ImageDropzone({ value, onChange, className }) {
         )}
       </div>
 
-      {/* Botón X para eliminar (Solo si hay imagen y no está subiendo) */}
       {value && !isUploading && (
         <button 
           onClick={handleRemove}
@@ -3141,12 +3138,12 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         
         {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
-        <div className="mx-auto h-20 w-20 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
-            <ShoppingCart className="text-white h-10 w-10" />
+        <div className="mx-auto h-44 w-44 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+            <ShoppingCart className="text-white h-24 w-24 " />
         </div>
 
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Habana Express Store
+        <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
+          Habana Express <span className="text-orange-500">Store</span> 
         </h2>
         {/* <p className="mt-2 text-center text-sm text-gray-600">
           Acceso al sistema de gestión
@@ -3326,7 +3323,7 @@ export default function POS() {
                   items: cart.map(i => ({ productId: i.id, quantity: i.qty }))
               }
           });
-          toast.success("✅ Venta registrada");
+          toast.success("Venta registrada");
           setCart([]);
           setBuyerPhone('');
       } catch (err) {
@@ -3931,7 +3928,7 @@ const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
   const handleManualSync = async () => {
       try {
           await triggerSync();
-          toast.success("✅ Precios actualizados con la tasa de hoy");
+          toast.success("Precios actualizados con la tasa de hoy");
       } catch (e) {
           toast.error("Error al sincronizar");
       }
@@ -3954,7 +3951,8 @@ const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
 
     try {
         // Asegúrate que el puerto coincida con tu backend (4000)
-        const response = await fetch('http://localhost:4000/api/upload', {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(API_URL+'/api/upload', {
             method: 'POST',
             body: formData,
         });

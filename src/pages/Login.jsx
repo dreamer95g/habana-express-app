@@ -33,12 +33,12 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         
         {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
-        <div className="mx-auto h-20 w-20 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
-            <ShoppingCart className="text-white h-10 w-10" />
+        <div className="mx-auto h-44 w-44 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+            <ShoppingCart className="text-white h-24 w-24 " />
         </div>
 
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Habana Express Store
+        <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
+          Habana Express <span className="text-orange-500">Store</span> 
         </h2>
         {/* <p className="mt-2 text-center text-sm text-gray-600">
           Acceso al sistema de gestión
