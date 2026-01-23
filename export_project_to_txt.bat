@@ -47,6 +47,11 @@ for /r "%TARGET_DIR%" %%F in (*) do (
         set "skip=true"
     )
 
+    :: ❌ Ignorar archivos .png
+    if /i "!file:~-4!"==".png" (
+        set "skip=true"
+    )
+
     :: ❌ Ignorar archivo .gitignore
     if /i "!file:~-10!"==".gitignore" (
         set "skip=true"

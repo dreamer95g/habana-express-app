@@ -44,9 +44,9 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\index.ht
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>habana-express-app</title>
+    <title>Habana Express Store</title>
   </head>
   <body>
     <div id="root"></div>
@@ -80,6 +80,7 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\package.
     "react-hook-form": "^7.71.1",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.12.0",
+    "recharts": "^3.7.0",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
@@ -550,7 +551,13 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\inde
 body {
   @apply bg-gray-50 text-gray-900;
 }
-.
+
+@layer base {
+  /* Evita zoom en iOS al tocar inputs */
+  input, textarea, select {
+    @apply text-base; 
+  }
+}.
 .
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\main.jsx
@@ -657,6 +664,157 @@ export default function CategoryModal({ isOpen, onClose, categoryToEdit, onSave,
 }.
 .
 ============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\dashboard\AdminDashboard.jsx
+============================================
+// src/components/dashboard/AdminDashboard.jsx
+import { useQuery } from '@apollo/client';
+import { GET_ADMIN_DASHBOARD } from '../../graphql/reports';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area 
+} from 'recharts';
+import { Loader2, TrendingUp, DollarSign, Award, User } from 'lucide-react';
+
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+// Formateador de dinero para los tooltips
+const formatCurrency = (value) => `$${new Intl.NumberFormat('en-US').format(value)}`;
+
+export default function AdminDashboard() {
+  const { data, loading, error } = useQuery(GET_ADMIN_DASHBOARD, { fetchPolicy: 'network-only' });
+
+  if (loading) return <div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin text-blue-600 h-8 w-8" /></div>;
+  if (error) return <div className="p-4 text-red-500 bg-red-50 rounded-lg">Error cargando gráficos: {error.message}</div>;
+
+  // Preparar datos para gráficos
+  const chartData = data?.annualReport?.breakdown.map(item => ({
+    name: MONTHS[item.month - 1], // Convertir 1 -> Ene
+    Inversión: item.investment,
+    Ganancia: item.profit,
+    ROI: item.roiPercentage
+  })) || [];
+
+  const topSellers = data?.topSellers || [];
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* 1. SECCIÓN GRÁFICOS FINANCIEROS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* GRÁFICO 1: COSTO VS GANANCIA (Líneas / Área) */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <DollarSign className="mr-2 text-green-600" size={20}/> Costo VS Inversión {new Date().getFullYear()}
+          </h3>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorGanancia" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorInv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} tickFormatter={(val) => `$${val/1000}k`} />
+                <Tooltip 
+                    formatter={(value) => formatCurrency(value)}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="Inversión" stroke="#ef4444" fillOpacity={1} fill="url(#colorInv)" strokeWidth={2} />
+                <Area type="monotone" dataKey="Ganancia" stroke="#16a34a" fillOpacity={1} fill="url(#colorGanancia)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-gray-400 text-center mt-2">Comparativa de Costos (Envíos+Mercancía) vs Ganancia Neta Real.</p>
+        </div>
+
+        {/* GRÁFICO 2: ROI % (Barras) */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <TrendingUp className="mr-2 text-blue-600" size={20}/> Retorno de Inversión (ROI)
+          </h3>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} unit="%" />
+                <Tooltip 
+                    cursor={{fill: '#f9fafb'}}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="ROI" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-gray-400 text-center mt-2">Porcentaje de ganancia sobre lo invertido por mes.</p>
+        </div>
+      </div>
+
+      {/* 2. SECCIÓN RANKING DE VENDEDORES (Con Fotos) */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <Award className="mr-2 text-yellow-500" size={20}/> Mejores Vendedores del Año
+          </h3>
+          
+          <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                  <thead>
+                      <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
+                          <th className="pb-3 pl-2">Posición / Vendedor</th>
+                          <th className="pb-3 text-center">Ítems Vendidos</th>
+                          <th className="pb-3 text-right pr-2">Total Generado (USD)</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                      {topSellers.length === 0 ? (
+                          <tr><td colSpan="3" className="text-center py-4 text-gray-400">Sin datos aún</td></tr>
+                      ) : topSellers.map((seller, idx) => (
+                          <tr key={seller.id_user} className="group hover:bg-gray-50 transition-colors">
+                              <td className="py-3 pl-2 flex items-center gap-3">
+                                  {/* Medalla de Posición */}
+                                  <div className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs text-white shrink-0 ${idx === 0 ? 'bg-yellow-400' : idx === 1 ? 'bg-gray-400' : idx === 2 ? 'bg-orange-400' : 'bg-blue-100 text-blue-600'}`}>
+                                      {idx + 1}
+                                  </div>
+
+                                  {/* 👇 FOTO DEL VENDEDOR */}
+                                  <div className="h-10 w-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
+                                      {seller.photo_url ? (
+                                          <img src={seller.photo_url} alt={seller.name} className="h-full w-full object-cover" />
+                                      ) : (
+                                          <User className="h-full w-full p-2 text-gray-400" />
+                                      )}
+                                  </div>
+
+                                  <span className="font-bold text-gray-700 text-sm">{seller.name}</span>
+                              </td>
+                              <td className="py-3 text-center">
+                                  <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs font-bold">
+                                      {seller.items_sold} unid.
+                                  </span>
+                              </td>
+                              <td className="py-3 text-right pr-2 font-mono font-bold text-gray-600">
+                                  ${new Intl.NumberFormat('en-US').format(seller.total_sales_usd)}
+                              </td>
+                          </tr>
+                      ))}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+
+    </div>
+  );
+}.
+.
+============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\layout\Layout.jsx
 ============================================
 // src/components/layout/Layout.jsx
@@ -712,7 +870,8 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\comp
 ============================================
 // src/components/layout/Navbar.jsx
 import { useState, useRef, useEffect } from 'react';
-import { Menu, User, ChevronDown } from 'lucide-react';
+// 👇 AQUÍ ESTABAN FALTANDO IMPORTACIONES
+import { Menu, User, ChevronDown, Database, Loader2, Phone, UserCog, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
 
@@ -721,17 +880,18 @@ import { UPDATE_USER } from '../../graphql/users';
 import UserModal from '../users/UserModal';
 import toast from 'react-hot-toast';
 
-
 export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  
+  // Estado para la descarga del backup
+  const [isDownloading, setIsDownloading] = useState(false);
 
-   const [updateUser, { loading: updating }] = useMutation(UPDATE_USER);
+  const [updateUser, { loading: updating }] = useMutation(UPDATE_USER);
 
-
-    const handleSelfUpdate = async (data) => {
+  const handleSelfUpdate = async (data) => {
     try {
         const input = {
             name: data.name,
@@ -739,7 +899,6 @@ export default function Navbar({ onMenuClick }) {
             email: data.email,
             photo_url: data.photo_url,
             telegram_chat_id: data.telegram_chat_id,
-            // NO enviamos rol
         };
         if (data.password) input.password = data.password;
 
@@ -747,18 +906,54 @@ export default function Navbar({ onMenuClick }) {
             variables: { id_user: user.id_user, input }
         });
 
-        // IMPORTANTE: Actualizar el contexto de Auth para que se refresque la foto/nombre en el Navbar
-        // Aquí asumimos que updateAuth es una función que agregaremos al contexto, 
-        // O simplemente forzamos un reload o actualizamos el localStorage manualmente.
-        // Por simplicidad ahora:
         const updatedUser = { ...user, ...res.data.updateUser };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(); // Recarga rápida para aplicar cambios en toda la app
+        window.location.reload(); 
         
         toast.success('Perfil actualizado');
         setIsProfileModalOpen(false);
     } catch (e) {
         toast.error(e.message);
+    }
+  };
+
+  // Función de Backup
+  const handleBackup = async () => {
+    setIsDownloading(true);
+    const toastId = toast.loading('Generando respaldo...');
+
+    try {
+      const token = localStorage.getItem('token');
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      const response = await fetch(`${API_URL}/api/backup`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Error al descargar respaldo');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const date = new Date().toISOString().split('T')[0];
+      a.download = `habana_backup_${date}.sql`;
+      document.body.appendChild(a);
+      a.click();
+      
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('Respaldo descargado', { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error('No se pudo crear el respaldo', { id: toastId });
+    } finally {
+      setIsDownloading(false);
+      setIsDropdownOpen(false);
     }
   };
 
@@ -775,7 +970,7 @@ export default function Navbar({ onMenuClick }) {
   return (
     <header className="bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md h-16 flex items-center justify-between px-4 z-20 sticky top-0">
       
-      {/* IZQUIERDA: Botón Hamburguesa (Visible SIEMPRE ahora) */}
+      {/* Botón Menú */}
       <div className="flex items-center">
         <button 
           onClick={onMenuClick}
@@ -783,14 +978,9 @@ export default function Navbar({ onMenuClick }) {
         >
           <Menu className="h-6 w-6" />
         </button>
-        
-        {/* Título (Opcional, ya que tenemos logo en sidebar) */}
-        {/* <h1 className="ml-4 text-xl font-bold text-white tracking-wide hidden md:block">
-          
-        </h1> */}
       </div>
 
-      {/* DERECHA: Perfil de Usuario */}
+      {/* Perfil de Usuario */}
       <div className="ml-auto relative" ref={dropdownRef}>
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -812,50 +1002,70 @@ export default function Navbar({ onMenuClick }) {
 
         {/* Dropdown Menu */}
         <div className={clsx(
-            "absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl py-2 transform transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5 z-50",
+            "absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl py-2 transform transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5 z-50",
             isDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
         )}>
+            {/* Header del Dropdown con Teléfono */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-                <p className="text-xs text-gray-500 uppercase font-semibold">Cuenta</p>
-                {/* <p className="text-sm font-bold text-gray-900 truncate mt-1">{user?.phone}</p> */}
-                <p className="text-sm font-bold text-gray-900 truncate mt-1">
-                    {user?.phone || 'Sin teléfono'}
-                </p>
+                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Cuenta Conectada</p>
+                <div className="flex items-center gap-2 text-gray-700">
+                    <Phone size={14} className="text-blue-500"/>
+                    <p className="text-sm font-bold truncate">
+                        {user?.phone || 'Sin teléfono'}
+                    </p>
+                </div>
             </div>
 
-            <div className="py-1">
+            <div className="py-2">
               {/* Botón Editar Perfil */}
               <button 
                 onClick={() => {
-                    setIsDropdownOpen(false); // Cerrar dropdown
-                    setIsProfileModalOpen(true); // Abrir modal
+                    setIsDropdownOpen(false);
+                    setIsProfileModalOpen(true);
                 }} 
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
               >
-                  Editar Perfil
+                  <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+                    <UserCog size={16} />
+                  </div>
+                  <span className="font-medium">Editar Perfil</span>
               </button>
+
+              {/* Botón Backup (Solo Admin) */}
+              {user?.role === 'admin' && (
+                 <button 
+                   onClick={handleBackup}
+                   disabled={isDownloading}
+                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                 >
+                    <div className="p-1.5 bg-purple-50 text-purple-600 rounded-lg">
+                      {isDownloading ? <Loader2 className="animate-spin h-4 w-4"/> : <Database size={16} />}
+                    </div>
+                    <span className="font-medium">{isDownloading ? 'Generando...' : 'Respaldo BD'}</span>
+                 </button>
+              )}
               
-              <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                  Salir del sistema
+              <div className="border-t border-gray-100 my-1"></div>
+
+              {/* Botón Salir */}
+              <button onClick={logout} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors group">
+                  <div className="p-1.5 bg-red-50 text-red-500 rounded-lg group-hover:bg-red-100 transition-colors">
+                    <LogOut size={16} />
+                  </div>
+                  <span className="font-bold">Cerrar Sesión</span>
               </button>
             </div>
-            
-            {/* <div className="py-1">
-              <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                  Salir del sistema
-              </button>
-            </div> */}
         </div>
       </div>
 
        <UserModal 
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
-        userToEdit={user} // Pasamos el usuario actual del AuthContext
+        userToEdit={user}
         onSave={handleSelfUpdate}
         isSaving={updating}
-        isSelfEdit={true} // Activa el modo "Mi Perfil"
-        isAdmin={user?.role === 'admin'} // Solo para saber si puede ver roles (aunque selfEdit lo deshabilita)
+        isSelfEdit={true}
+        isAdmin={user?.role === 'admin'}
       />
     </header>
   );
@@ -1413,6 +1623,132 @@ export default function ProductModal({ isOpen, onClose, productToEdit, categorie
 }.
 .
 ============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\sales\MobileCartSheet.jsx
+============================================
+// src/components/sales/MobileCartSheet.jsx
+import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
+
+export default function MobileCartSheet({ 
+  isOpen, 
+  onClose, 
+  cart, 
+  updateQty, 
+  removeFromCart, 
+  totalCUP, 
+  estimatedCommission,
+  buyerPhone,
+  setBuyerPhone,
+  paymentMethod,
+  setPaymentMethod,
+  handleCheckout,
+  processing 
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 md:hidden flex flex-col bg-gray-100 animate-in slide-in-from-bottom duration-300">
+      
+      {/* HEADER */}
+      <div className="bg-white px-4 py-3 flex justify-between items-center shadow-sm border-b">
+        <h2 className="font-bold text-lg text-gray-800">Tu Carrito ({cart.length})</h2>
+        <button onClick={onClose} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* BODY: LISTA DE ITEMS */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {cart.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+             <p>El carrito está vacío</p>
+          </div>
+        ) : (
+          cart.map(item => (
+            <div key={item.id} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex gap-3">
+               {/* Imagen pequeña */}
+               <div className="h-16 w-16 bg-gray-50 rounded-lg flex-shrink-0 overflow-hidden">
+                  {item.photo ? <img src={item.photo} className="w-full h-full object-cover"/> : null}
+               </div>
+               
+               {/* Info */}
+               <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                     <span className="font-bold text-sm text-gray-800 line-clamp-1">{item.name}</span>
+                     <button onClick={() => removeFromCart(item.id)} className="text-red-400">
+                        <Trash2 size={16} />
+                     </button>
+                  </div>
+                  
+                  <div className="flex justify-between items-end">
+                     <span className="text-blue-600 font-bold text-sm">${item.price * item.qty}</span>
+                     
+                     {/* Controles Cantidad */}
+                     <div className="flex items-center bg-gray-100 rounded-lg overflow-hidden">
+                        <button onClick={() => updateQty(item.id, -1)} className="p-1 px-2 active:bg-gray-200"><Minus size={14}/></button>
+                        <span className="w-6 text-center text-sm font-bold">{item.qty}</span>
+                        <button onClick={() => updateQty(item.id, 1)} className="p-1 px-2 active:bg-gray-200"><Plus size={14}/></button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* FOOTER: COBRO */}
+      <div className="bg-white p-4 border-t border-gray-200 rounded-t-2xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+         {/* Datos Cliente */}
+         <div className="mb-4">
+            <input 
+              type="tel" 
+              placeholder="📱 Teléfono del Cliente" 
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium text-lg" 
+              value={buyerPhone} 
+              onChange={e => setBuyerPhone(e.target.value)} 
+            />
+         </div>
+
+         {/* Método Pago */}
+         <div className="grid grid-cols-2 gap-3 mb-4">
+             <button 
+                onClick={() => setPaymentMethod('cash')} 
+                className={`py-3 rounded-xl font-bold text-sm border transition-all ${paymentMethod==='cash' ? 'bg-green-100 border-green-500 text-green-700 shadow-sm' : 'bg-white border-gray-200 text-gray-500'}`}
+             >
+                💵 Efectivo
+             </button>
+             <button 
+                onClick={() => setPaymentMethod('transfer')} 
+                className={`py-3 rounded-xl font-bold text-sm border transition-all ${paymentMethod==='transfer' ? 'bg-blue-100 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-gray-500'}`}
+             >
+                🏦 Transferencia
+             </button>
+         </div>
+
+         {/* Totales */}
+         <div className="flex justify-between items-center mb-4">
+             <div className="text-xs text-gray-500">
+                <p>Comisión estimada: <span className="text-green-600 font-bold">+${estimatedCommission.toFixed(0)}</span></p>
+                <p>{cart.length} Artículos</p>
+             </div>
+             <div className="text-right">
+                <span className="text-gray-400 text-xs font-bold uppercase">Total a Cobrar</span>
+                <p className="text-2xl font-black text-gray-900">${totalCUP.toFixed(0)}</p>
+             </div>
+         </div>
+
+         <button 
+            onClick={handleCheckout} 
+            disabled={processing || cart.length===0} 
+            className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl text-lg hover:bg-blue-700 disabled:opacity-50 active:scale-95 transition-transform shadow-lg shadow-blue-200"
+         >
+             {processing ? <Loader2 className="animate-spin mx-auto"/> : "CONFIRMAR VENTA"}
+         </button>
+      </div>
+    </div>
+  );
+}.
+.
+============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\sales\SaleModal.jsx
 ============================================
 import { useEffect } from 'react';
@@ -1728,6 +2064,81 @@ export default function ImageDropzone({ value, onChange, className }) {
           <X size={12} />
         </button>
       )}
+    </div>
+  );
+}.
+.
+============================================
+Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\components\ui\TablePagination.jsx
+============================================
+// src/components/ui/TablePagination.jsx
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+export default function TablePagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // Si no hay suficientes datos para más de una página, no mostramos nada
+  if (totalPages <= 1) return null;
+
+  // Calcular rangos para mostrar "Viendo 1-10 de 50"
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(startItem + itemsPerPage - 1, totalItems);
+
+  return (
+    <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-b-xl">
+      
+      {/* --- VISTA MOVIL (Simplificada) --- */}
+      <div className="flex flex-1 justify-between sm:hidden">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Anterior
+        </button>
+        <span className="text-sm flex items-center font-medium text-gray-600">
+           {currentPage} / {totalPages}
+        </span>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Siguiente
+        </button>
+      </div>
+
+      {/* --- VISTA ESCRITORIO (Completa) --- */}
+      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm text-gray-700">
+            Mostrando <span className="font-medium">{startItem}</span> a <span className="font-medium">{endItem}</span> de{' '}
+            <span className="font-medium">{totalItems}</span> resultados
+          </p>
+        </div>
+        
+        <div className="flex gap-2">
+            <button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center rounded-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <ChevronLeft className="h-5 w-5" />
+            </button>
+            
+            <div className="flex items-center px-4 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 rounded-md bg-gray-50">
+                Página {currentPage} de {totalPages}
+            </div>
+
+            <button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="relative inline-flex items-center rounded-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <ChevronRight className="h-5 w-5" />
+            </button>
+        </div>
+      </div>
     </div>
   );
 }.
@@ -2168,12 +2579,36 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\grap
 ============================================
 import { gql } from '@apollo/client';
 
+
 export const GET_DASHBOARD_STATS = gql`
   query GetDashboardStats {
     dashboardStats {
       exchangeRate
       activeProductsCount
       totalItemsSold
+    }
+  }
+`;
+
+// 👇 NUEVA QUERY PARA GRÁFICOS ADMIN
+export const GET_ADMIN_DASHBOARD = gql`
+  query GetAdminDashboard {
+    annualReport {
+      year
+      totalNetProfit
+      breakdown {
+        month
+        investment      # Costo Total
+        profit          # Ganancia Neta
+        roiPercentage   # ROI %
+      }
+    }
+    topSellers(period: "year") {
+      id_user
+      name
+      photo_url
+      total_sales_usd
+      items_sold
     }
   }
 `;.
@@ -2408,23 +2843,30 @@ export const DELETE_USER = gql`
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Categories.jsx
 ============================================
 // src/pages/Categories.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_CATEGORIES, CREATE_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY } from '../graphql/categories';
 import { Search, Plus, Edit2, Trash2, Tag, Loader2, AlertCircle } from 'lucide-react';
 import CategoryModal from '../components/categories/CategoryModal';
 import toast from 'react-hot-toast';
 
+// 👇 Importamos el componente de paginación que acabamos de crear
+import TablePagination from '../components/ui/TablePagination';
+
 export default function Categories() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
 
+  // --- CONFIGURACIÓN DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Puedes cambiar este número (ej: 5, 8, 10)
+
   // --- GRAPHQL ---
   const { data, loading, error } = useQuery(GET_CATEGORIES);
   
   const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY, {
-    refetchQueries: [{ query: GET_CATEGORIES }], // Recarga la lista al terminar
+    refetchQueries: [{ query: GET_CATEGORIES }],
   });
 
   const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY, {
@@ -2435,11 +2877,27 @@ export default function Categories() {
     refetchQueries: [{ query: GET_CATEGORIES }],
   });
 
-  // --- LOGICA ---
+  // --- LOGICA DE FILTRADO ---
   const filteredCategories = data?.categories?.filter(cat => 
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
+  // --- LOGICA DE PAGINACIÓN (CLIENT SIDE) ---
+  
+  // 1. Resetea a la página 1 si el usuario escribe en el buscador
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // 2. Calcular índices para "cortar" el array
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  
+  // 3. Obtener solo los items de la página actual
+  const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
+
+
+  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingCategory(null);
     setIsModalOpen(true);
@@ -2524,7 +2982,7 @@ export default function Categories() {
         </div>
       ) : (
         <>
-          {/* VISTA DESKTOP (TABLA) - Oculta en pantallas pequeñas */}
+          {/* VISTA DESKTOP (TABLA) */}
           <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
@@ -2536,7 +2994,8 @@ export default function Categories() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filteredCategories.map((cat, index) => (
+                {/* 🔴 CAMBIO: Mapeamos 'currentItems' en vez de 'filteredCategories' */}
+                {currentItems.map((cat) => (
                   <tr key={cat.id_category} className="hover:bg-blue-50/30 transition-colors group">
                     <td className="px-6 py-4 text-gray-400 font-mono text-xs">#{cat.id_category}</td>
                     <td className="px-6 py-4 font-medium text-gray-800">{cat.name}</td>
@@ -2565,9 +3024,10 @@ export default function Categories() {
             </table>
           </div>
 
-          {/* VISTA MOVIL (TARJETAS) - Visible solo en pantallas pequeñas */}
+          {/* VISTA MOVIL (TARJETAS) */}
           <div className="md:hidden grid grid-cols-1 gap-4">
-            {filteredCategories.map((cat) => (
+            {/* 🔴 CAMBIO: Mapeamos 'currentItems' aquí también */}
+            {currentItems.map((cat) => (
               <div key={cat.id_category} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-800 text-lg">{cat.name}</h3>
@@ -2595,6 +3055,14 @@ export default function Categories() {
               </div>
             ))}
           </div>
+          
+          {/* 👇 AQUÍ INSERTAMOS EL COMPONENTE DE PAGINACIÓN */}
+          <TablePagination 
+            currentPage={currentPage}
+            totalItems={filteredCategories.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
 
@@ -2616,13 +3084,16 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\page
 // src/pages/Dashboard.jsx
 import { useQuery } from '@apollo/client';
 import { GET_DASHBOARD_STATS } from '../graphql/reports';
-import { useAuth } from '../context/AuthContext'; // Importamos AuthContext para saber el rol
+import { useAuth } from '../context/AuthContext';
 import { Loader2, TrendingUp, Package, ShoppingBag, UserCheck, Globe } from 'lucide-react';
+
+// 👇 Importar el nuevo componente
+import AdminDashboard from '../components/dashboard/AdminDashboard';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, { 
-      pollInterval: 30000, // Actualizar cada 30s
+      pollInterval: 30000, 
       fetchPolicy: 'network-only' 
   });
 
@@ -2631,9 +3102,12 @@ export default function Dashboard() {
 
   const { exchangeRate, activeProductsCount, totalItemsSold } = data.dashboardStats;
   const isSeller = user.role === 'seller';
+  const isAdmin = user.role === 'admin'; // Verificar si es admin
 
   return (
     <div className="space-y-8 pb-20">
+      
+      {/* 1. HEADER */}
       <div className="flex items-center justify-between">
         <div>
             <h1 className="text-2xl font-bold text-gray-800">
@@ -2645,9 +3119,10 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* 2. TARJETAS RESUMEN (PARA TODOS) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* TARJETA 1: VENTAS (Cambia según rol) */}
+        {/* Ventas */}
         <div className="bg-gradient-to-br from-blue-600 to-blue-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
            <div className="relative z-10">
               <h3 className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -2659,11 +3134,10 @@ export default function Dashboard() {
                 <span className="mb-1.5 ml-2 text-blue-100 text-sm font-medium">unidades</span>
               </div>
            </div>
-           {/* Decoración */}
            <ShoppingBag className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
         </div>
 
-        {/* TARJETA 2: STOCK (Cambia según rol) */}
+        {/* Stock */}
         <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
            <div className="relative z-10">
               <h3 className="text-indigo-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -2680,7 +3154,7 @@ export default function Dashboard() {
            <Package className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
         </div>
 
-        {/* TARJETA 3: TASA (Igual para todos) */}
+        {/* Tasa */}
         <div className="bg-gradient-to-br from-orange-500 to-red-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden">
            <div className="relative z-10">
               <h3 className="text-white/80 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -2695,8 +3169,17 @@ export default function Dashboard() {
            </div>
            <TrendingUp className="absolute right-[-10px] bottom-[-10px] h-28 w-28 text-white opacity-10" />
         </div>
-
       </div>
+
+      {/* 3. SECCIÓN EXCLUSIVA DE ADMIN (GRÁFICOS) */}
+      {isAdmin && (
+         <div className="mt-10">
+            <h2 className="text-xl font-bold text-gray-800 mb-6 px-1 border-l-4 border-blue-600 pl-3">
+              Análisis Financiero
+            </h2>
+            <AdminDashboard />
+         </div>
+      )}
     </div>
   );
 }.
@@ -3022,65 +3505,99 @@ const [returnProduct] = useMutation(RETURN_PRODUCT_FROM_SELLER);
            </>
        )}
 
-       {/* VISTA 2: VENDEDORES */}
+      {/* VISTA 2: VENDEDORES */}
        {viewMode === 'sellers' && (
            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
                {!selectedSeller ? (
                    <div className="flex flex-col items-center justify-center h-full py-20 text-gray-400">
                        <Users className="h-16 w-16 mb-4 text-purple-200" />
-                       <p className="text-lg font-medium">Selecciona un vendedor para ver su inventario.</p>
+                       <p className="text-lg font-medium text-center px-4">Selecciona un vendedor arriba para ver su inventario.</p>
                    </div>
                ) : loadingSellerStock ? (
                    <div className="flex justify-center py-20"><Loader2 className="animate-spin text-purple-600 h-10 w-10" /></div>
                ) : filteredSellerStock.length === 0 ? (
                    <div className="text-center py-20 text-gray-500">
-                       <p>Este vendedor no tiene mercancía asignada que coincida con la búsqueda.</p>
+                       <p>Este vendedor no tiene esa mercancía.</p>
                    </div>
                ) : (
-                   <div className="overflow-x-auto">
-                       <table className="w-full text-left">
-                           <thead className="bg-purple-50 text-purple-900 border-b border-purple-100">
-                               <tr>
-                                   <th className="px-6 py-4 font-bold text-sm">Producto</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-center">En Posesión</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-right">Precio Venta (CUP)</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-right">Acciones</th>
-                               </tr>
-                           </thead>
-                           <tbody className="divide-y divide-gray-50">
-                               {filteredSellerStock.map(item => (
-                                   <tr key={item.id_seller_product} className="hover:bg-gray-50 transition-colors">
-                                       <td className="px-6 py-4">
-                                           <div className="flex items-center gap-3">
-                                               <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                                   {item.product.photo_url && <img src={item.product.photo_url} className="w-full h-full object-cover" />}
-                                               </div>
-                                               <span className="font-medium text-gray-800">{item.product.name}</span>
-                                           </div>
-                                       </td>
-                                       <td className="px-6 py-4 text-center">
-                                           <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm">
-                                               {item.quantity} unid.
-                                           </span>
-                                       </td>
-                                       <td className="px-6 py-4 text-right font-mono font-bold text-gray-600">
-                                           {/* Aquí podrías calcular CUP real si tienes tasa, o mostrar USD */}
-                                            ${item.product.sale_price} <span className="text-xs text-gray-400">USD base</span>
-                                       </td>
-                                       <td className="px-6 py-4 text-right">
-                                           <button 
-                                             onClick={() => handleReturnStock(item)}
-                                             className="text-sm bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ml-auto"
-                                             title="Devolver al almacén principal"
-                                           >
-                                               <RefreshCw size={14} /> Devolver
-                                           </button>
-                                       </td>
+                   <>
+                       {/* --- VISTA ESCRITORIO (TABLA) --- */}
+                       <div className="hidden md:block overflow-x-auto">
+                           <table className="w-full text-left">
+                               <thead className="bg-purple-50 text-purple-900 border-b border-purple-100">
+                                   <tr>
+                                       <th className="px-6 py-4 font-bold text-sm">Producto</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-center">En Posesión</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-right">Precio Venta (CUP)</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-right">Acciones</th>
                                    </tr>
-                               ))}
-                           </tbody>
-                       </table>
-                   </div>
+                               </thead>
+                               <tbody className="divide-y divide-gray-50">
+                                   {filteredSellerStock.map(item => (
+                                       <tr key={item.id_seller_product} className="hover:bg-gray-50 transition-colors">
+                                           <td className="px-6 py-4">
+                                               <div className="flex items-center gap-3">
+                                                   <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                       {item.product.photo_url && <img src={item.product.photo_url} className="w-full h-full object-cover" />}
+                                                   </div>
+                                                   <span className="font-medium text-gray-800">{item.product.name}</span>
+                                               </div>
+                                           </td>
+                                           <td className="px-6 py-4 text-center">
+                                               <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm">
+                                                   {item.quantity} unid.
+                                               </span>
+                                           </td>
+                                           <td className="px-6 py-4 text-right font-mono font-bold text-gray-600">
+                                                ${item.product.sale_price} <span className="text-xs text-gray-400">USD</span>
+                                           </td>
+                                           <td className="px-6 py-4 text-right">
+                                               <button 
+                                                 onClick={() => handleReturnStock(item)}
+                                                 className="text-sm bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ml-auto"
+                                               >
+                                                   <RefreshCw size={14} /> Devolver
+                                               </button>
+                                           </td>
+                                       </tr>
+                                   ))}
+                               </tbody>
+                           </table>
+                       </div>
+
+                       {/* --- VISTA MÓVIL (TARJETAS) --- */}
+                       <div className="md:hidden p-4 space-y-4">
+                           {filteredSellerStock.map(item => (
+                               <div key={item.id_seller_product} className="border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm">
+                                    <div className="h-16 w-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                        {item.product.photo_url ? (
+                                            <img src={item.product.photo_url} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <PackageOpen className="m-auto mt-4 text-gray-300"/>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-bold text-gray-800 text-sm truncate">{item.product.name}</h4>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold">
+                                                x{item.quantity}
+                                            </span>
+                                            <span className="text-xs text-gray-500 font-mono">
+                                                ${item.product.sale_price}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => handleReturnStock(item)}
+                                        className="p-2 bg-gray-50 text-red-500 rounded-lg border border-gray-200"
+                                        title="Devolver"
+                                    >
+                                        <RefreshCw size={18} />
+                                    </button>
+                               </div>
+                           ))}
+                       </div>
+                   </>
                )}
            </div>
        )}
@@ -3210,26 +3727,29 @@ export default function Login() {
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\POS.jsx
 ============================================
+// src/pages/POS.jsx
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { useAuth } from '../context/AuthContext';
-import { GET_SELLER_PRODUCTS } from '../graphql/products'; // Solo esta query
+import { GET_SELLER_PRODUCTS } from '../graphql/products';
 import { GET_CONFIG } from '../graphql/configuration';
 import { CREATE_SALE } from '../graphql/sales';
-import { Search, ShoppingCart, Trash2, Plus, Minus, CreditCard, Banknote, Loader2, Package, AlertCircle } from 'lucide-react';
+import { Search, ShoppingCart, Trash2, Plus, Minus, Loader2, Package, AlertCircle, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+// Importar el nuevo componente móvil
+import MobileCartSheet from '../components/sales/MobileCartSheet';
 
 export default function POS() {
   const { user } = useAuth();
   
-  // Seguridad extra por si un Admin entra por URL directa
+  // --- SEGURIDAD ---
   if (user.role === 'admin') {
       return (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+          <div className="flex flex-col items-center justify-center h-full text-gray-500 p-6 text-center">
               <AlertCircle className="h-16 w-16 mb-4 text-red-400" />
               <h2 className="text-xl font-bold">Modo Administrador</h2>
-              <p>Para vender, por favor crea un usuario Vendedor y accede con él.</p>
-              <p className="text-sm mt-2">Puedes gestionar las ventas en "Historial Ventas".</p>
+              <p>El POS está optimizado para Vendedores.</p>
           </div>
       );
   }
@@ -3239,6 +3759,7 @@ export default function POS() {
   const [cart, setCart] = useState([]);
   const [buyerPhone, setBuyerPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false); // Estado para el modal móvil
 
   // --- QUERIES ---
   const { data: configData } = useQuery(GET_CONFIG);
@@ -3246,7 +3767,6 @@ export default function POS() {
   const exchangeRate = config?.default_exchange_rate || 1;
   const commissionPct = config?.seller_commission_percentage || 0;
 
-  // Carga SOLO productos del vendedor
   const { data: sellerProds, loading, refetch } = useQuery(GET_SELLER_PRODUCTS, {
     variables: { sellerId: parseInt(user.id_user) },
     fetchPolicy: 'network-only'
@@ -3256,14 +3776,14 @@ export default function POS() {
      onCompleted: () => { refetch(); }
   });
 
-  // --- PRODUCTOS DISPONIBLES ---
+  // --- FILTRADO ---
   const availableProducts = useMemo(() => {
       const rawList = sellerProds?.sellerProducts
           ?.filter(sp => sp.quantity > 0) 
           .map(sp => ({
               id: sp.product.id_product,
               name: sp.product.name,
-              price: sp.product.sale_price,
+              price: sp.product.sale_price, // Precio ya viene en CUP o USD según tu lógica, asumo CUP final
               stock: sp.quantity,
               photo: sp.product.photo_url
           })) || [];
@@ -3271,20 +3791,38 @@ export default function POS() {
       return rawList.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [sellerProds, searchTerm]);
 
-
-  // --- CARRITO ---
+// --- LOGICA CARRITO CORREGIDA ---
   const addToCart = (product) => {
-    setCart(prev => {
-        const existing = prev.find(item => item.id === product.id);
-        if (existing) {
-            if (existing.qty >= product.stock) {
-                toast.error("Has alcanzado tu límite de stock asignado");
-                return prev;
-            }
-            return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+    // 1. Buscamos si ya existe usando el estado actual 'cart' (fuera del setter)
+    const existingItem = cart.find(item => item.id === product.id);
+
+    // CASO A: El producto YA está en el carrito
+    if (existingItem) {
+        // Verificamos el stock ANTES de intentar actualizar
+        if (existingItem.qty >= product.stock) {
+            // Toast fuera del setter -> Se ejecuta una sola vez
+            toast.error("Límite de stock alcanzado", { id: 'stock-limit' }); 
+            return; // No hacemos nada más
         }
-        return [...prev, { ...product, qty: 1 }];
-    });
+        
+        // Si hay stock, actualizamos el estado limpiamente
+        setCart(prev => prev.map(item => 
+            item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        ));
+    } 
+    
+    // CASO B: Es un producto NUEVO
+    else {
+        // Toast fuera del setter -> Se ejecuta una sola vez
+        toast.success("Agregado al carrito", { 
+            duration: 1000, 
+            position: 'bottom-center',
+            id: 'added-cart' // id opcional para evitar duplicados rápidos
+        });
+        
+        // Actualizamos estado
+        setCart(prev => [...prev, { ...product, qty: 1 }]);
+    }
   };
 
   const updateQty = (id, delta) => {
@@ -3303,13 +3841,12 @@ export default function POS() {
 
   const removeFromCart = (id) => setCart(prev => prev.filter(item => item.id !== id));
 
-  // --- CÁLCULOS ---
   const totalCUP = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const estimatedCommission = totalCUP * (commissionPct / 100);
 
   const handleCheckout = async () => {
       if (cart.length === 0) return toast.error("Carrito vacío");
-      if (!buyerPhone) return toast.error("Ingresa el teléfono");
+      if (!buyerPhone) return toast.error("Ingresa el teléfono del cliente");
 
       try {
           await createSale({
@@ -3323,49 +3860,77 @@ export default function POS() {
                   items: cart.map(i => ({ productId: i.id, quantity: i.qty }))
               }
           });
-          toast.success("Venta registrada");
+          toast.success("¡Venta Exitosa!");
           setCart([]);
           setBuyerPhone('');
+          setIsMobileCartOpen(false); // Cerrar modal móvil si estaba abierto
       } catch (err) {
           toast.error(err.message);
       }
   };
 
-  // --- RENDER (Igual que antes pero sin condicionales de admin) ---
+  // --- RENDER ---
   return (
-    <div className="h-[calc(100vh-6rem)] flex flex-col md:flex-row gap-4 pb-2">
-       {/* IZQUIERDA: Grid de Productos */}
-       <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-             <h2 className="font-bold text-gray-800">Tu Inventario</h2>
-             <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
-                Tasa: ${exchangeRate}
-             </span>
-          </div>
+    <div className="flex flex-col h-full md:flex-row gap-4 pb-20 md:pb-0 relative">
+       
+       {/* 1. SECCIÓN PRODUCTOS (Izquierda / Full Mobile) */}
+       <div className="flex-1 bg-white rounded-none md:rounded-2xl shadow-none md:shadow-sm border-x-0 md:border border-gray-100 flex flex-col overflow-hidden h-full">
           
-          <div className="p-4 border-b border-gray-100">
+          {/* Header Sticky */}
+          <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-100 shadow-sm">
+             <div className="flex justify-between items-center mb-3">
+                 <h2 className="font-bold text-gray-800 text-lg">Catálogo</h2>
+                 <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold border border-blue-100">
+                    Tasa: ${exchangeRate}
+                 </span>
+             </div>
+             
+             {/* Buscador optimizado para dedos */}
              <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-3.5 text-gray-400 h-5 w-5" />
                 <input 
-                    type="text" placeholder="Buscar..." 
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    type="text" placeholder=" Buscar producto..." 
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-base"
                     value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
                 />
              </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-50/30">
+          {/* Grid de Productos */}
+          <div className="flex-1 overflow-y-auto p-3 bg-gray-50/30">
              {loading ? <Loader2 className="animate-spin mx-auto mt-10 text-blue-500"/> : 
-              availableProducts.length === 0 ? <div className="text-center mt-10 text-gray-400">Sin productos asignados.</div> :
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              availableProducts.length === 0 ? <div className="text-center mt-10 text-gray-400">No hay productos.</div> :
+              
+              /* GRID RESPONSIVE: 2 columnas en móvil, más en escritorio */
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pb-24 md:pb-0">
                  {availableProducts.map(prod => (
-                    <div key={prod.id} onClick={() => addToCart(prod)} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:border-blue-300 cursor-pointer group">
-                       <div className="h-28 bg-gray-100 rounded-lg mb-2 relative overflow-hidden">
-                           {prod.photo ? <img src={prod.photo} className="w-full h-full object-cover"/> : <Package className="m-auto mt-8 text-gray-300"/>}
-                           <span className="absolute top-1 right-1 bg-black/60 text-white text-[10px] px-1 rounded">x{prod.stock}</span>
+                    <div 
+                        key={prod.id} 
+                        onClick={() => addToCart(prod)} 
+                        className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm hover:border-blue-300 active:scale-95 transition-all cursor-pointer flex flex-col h-full"
+                    >
+                       <div className="aspect-square bg-gray-100 rounded-lg mb-2 relative overflow-hidden">
+                           {prod.photo ? (
+                               <img src={prod.photo} className="w-full h-full object-cover"/>
+                           ) : (
+                               <Package className="absolute inset-0 m-auto text-gray-300 h-8 w-8"/>
+                           )}
+                           {/* Badge de Stock */}
+                           <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
+                              Stock: {prod.stock}
+                           </span>
                        </div>
-                       <h3 className="font-bold text-sm line-clamp-1">{prod.name}</h3>
-                       <p className="text-blue-600 font-bold">${prod.price}</p>
+                       
+                       <h3 className="font-semibold text-gray-800 text-xs sm:text-sm line-clamp-2 leading-tight flex-1">
+                          {prod.name}
+                       </h3>
+                       
+                       <div className="mt-2 pt-2 border-t border-gray-50 flex justify-between items-center">
+                          <p className="text-blue-600 font-extrabold text-sm sm:text-base">${prod.price}</p>
+                          <div className="bg-blue-50 text-blue-600 p-1 rounded-full">
+                              <Plus size={14} />
+                          </div>
+                       </div>
                     </div>
                  ))}
               </div>
@@ -3373,51 +3938,91 @@ export default function POS() {
           </div>
        </div>
 
-       {/* DERECHA: Ticket (Sin cambios mayores, solo quitando lógica admin) */}
-       <div className="w-full md:w-80 bg-white rounded-2xl shadow-xl border border-gray-100 flex flex-col">
-           <div className="p-4 bg-blue-600 text-white rounded-t-2xl font-bold flex items-center">
-               <ShoppingCart className="mr-2 h-5 w-5"/> Ticket
+       {/* 2. SECCIÓN TICKET DESKTOP (Oculto en móvil) */}
+       <div className="hidden md:flex w-80 bg-white rounded-2xl shadow-xl border border-gray-100 flex-col h-[calc(100vh-6rem)] sticky top-4">
+           {/* ... (Este es el mismo código de escritorio que ya tenías, no cambia mucho) ... */}
+           <div className="p-4 bg-blue-600 text-white rounded-t-2xl font-bold flex items-center shadow-md">
+               <ShoppingCart className="mr-2 h-5 w-5"/> Ticket de Venta
            </div>
            
-           <div className="flex-1 overflow-y-auto p-4 space-y-2">
+           <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50/50">
+               {cart.length === 0 && <p className="text-center text-gray-400 text-sm mt-4">Carrito vacío</p>}
                {cart.map(item => (
-                   <div key={item.id} className="flex justify-between items-center bg-gray-50 p-2 rounded-lg text-sm">
-                       <div className="flex-1">
-                           <div className="font-bold truncate w-32">{item.name}</div>
-                           <div className="text-blue-600 text-xs">${item.price * item.qty}</div>
+                   <div key={item.id} className="flex justify-between items-center bg-white border border-gray-100 p-2 rounded-lg text-sm shadow-sm">
+                       <div className="flex-1 min-w-0 pr-2">
+                           <div className="font-bold truncate text-gray-800">{item.name}</div>
+                           <div className="text-blue-600 text-xs font-medium">${item.price * item.qty}</div>
                        </div>
-                       <div className="flex items-center gap-1">
-                           <button onClick={() => updateQty(item.id, -1)} className="p-1 bg-white border rounded"><Minus size={12}/></button>
-                           <span className="w-4 text-center font-bold">{item.qty}</span>
-                           <button onClick={() => updateQty(item.id, 1)} className="p-1 bg-white border rounded"><Plus size={12}/></button>
+                       <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+                           <button onClick={() => updateQty(item.id, -1)} className="p-1 hover:bg-white rounded transition"><Minus size={12}/></button>
+                           <span className="w-5 text-center font-bold text-xs">{item.qty}</span>
+                           <button onClick={() => updateQty(item.id, 1)} className="p-1 hover:bg-white rounded transition"><Plus size={12}/></button>
                        </div>
-                       <button onClick={() => removeFromCart(item.id)} className="text-red-400 ml-1"><Trash2 size={14}/></button>
+                       <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-600 ml-2 p-1"><Trash2 size={14}/></button>
                    </div>
                ))}
            </div>
 
-           <div className="p-4 bg-gray-50 border-t space-y-3 rounded-b-2xl">
-               <input type="text" placeholder="Teléfono Cliente" className="w-full p-2 border rounded-lg text-sm" value={buyerPhone} onChange={e => setBuyerPhone(e.target.value)} />
+           <div className="p-4 bg-white border-t space-y-3 rounded-b-2xl shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+               <input type="text" placeholder="📱 Teléfono Cliente" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" value={buyerPhone} onChange={e => setBuyerPhone(e.target.value)} />
                
                <div className="flex gap-2 text-xs">
-                   <button onClick={() => setPaymentMethod('cash')} className={`flex-1 py-2 rounded border ${paymentMethod==='cash'?'bg-green-100 border-green-300':'bg-white'}`}>Efectivo</button>
-                   <button onClick={() => setPaymentMethod('transfer')} className={`flex-1 py-2 rounded border ${paymentMethod==='transfer'?'bg-blue-100 border-blue-300':'bg-white'}`}>Transf.</button>
+                   <button onClick={() => setPaymentMethod('cash')} className={`flex-1 py-2 rounded-lg border font-bold ${paymentMethod==='cash'?'bg-green-50 border-green-200 text-green-700':'bg-white text-gray-500'}`}>Efectivo</button>
+                   <button onClick={() => setPaymentMethod('transfer')} className={`flex-1 py-2 rounded-lg border font-bold ${paymentMethod==='transfer'?'bg-blue-50 border-blue-200 text-blue-700':'bg-white text-gray-500'}`}>Transf.</button>
                </div>
 
                <div className="space-y-1 pt-2 border-t">
-                   <div className="flex justify-between text-green-600 text-xs font-bold">
-                       <span>Ganancia:</span><span>+${estimatedCommission.toFixed(0)}</span>
-                   </div>
                    <div className="flex justify-between text-lg font-bold">
                        <span>Total:</span><span className="text-blue-600">${totalCUP.toFixed(0)}</span>
                    </div>
                </div>
 
-               <button onClick={handleCheckout} disabled={processing || cart.length===0} className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50">
+               <button onClick={handleCheckout} disabled={processing || cart.length===0} className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50 shadow-lg shadow-blue-200 transition-transform active:scale-95">
                    {processing ? <Loader2 className="animate-spin mx-auto"/> : "COBRAR"}
                </button>
            </div>
        </div>
+
+       {/* 3. BARRA FLOTANTE MÓVIL (Sticky Bottom) */}
+       {/* Solo visible en móvil y si hay items en el carrito */}
+       {cart.length > 0 && (
+          <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent z-40">
+              <button 
+                  onClick={() => setIsMobileCartOpen(true)}
+                  className="w-full bg-blue-600 text-white rounded-2xl p-4 shadow-xl flex items-center justify-between active:scale-95 transition-transform"
+              >
+                  <div className="flex items-center gap-2">
+                      <div className="bg-white/20 px-3 py-1 rounded-lg font-bold text-sm">
+                          {cart.reduce((acc, i) => acc + i.qty, 0)} ítems
+                      </div>
+                      <div className="flex flex-col items-start leading-none">
+                          <span className="text-[10px] opacity-80 uppercase font-bold">Total</span>
+                          <span className="text-lg font-black">${totalCUP}</span>
+                      </div>
+                  </div>
+                  <div className="flex items-center font-bold text-sm">
+                      Ver Carrito <ChevronUp className="ml-1 animate-bounce" size={16}/>
+                  </div>
+              </button>
+          </div>
+       )}
+
+       {/* 4. MODAL COMPLETO MÓVIL (Importado) */}
+       <MobileCartSheet 
+         isOpen={isMobileCartOpen}
+         onClose={() => setIsMobileCartOpen(false)}
+         cart={cart}
+         updateQty={updateQty}
+         removeFromCart={removeFromCart}
+         totalCUP={totalCUP}
+         estimatedCommission={estimatedCommission}
+         buyerPhone={buyerPhone}
+         setBuyerPhone={setBuyerPhone}
+         paymentMethod={paymentMethod}
+         setPaymentMethod={setPaymentMethod}
+         handleCheckout={handleCheckout}
+         processing={processing}
+       />
     </div>
   );
 }.
@@ -3596,43 +4201,60 @@ export default function Returns() {
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\src\pages\Sales.jsx
 ============================================
-import { useState } from 'react';
+// src/pages/Sales.jsx
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-// Asegúrate de que en graphql/sales.js tengas exportado CANCEL_SALE
 import { GET_SALES, UPDATE_SALE, CANCEL_SALE } from '../graphql/sales';
-import { Search, FileText, Edit2, Ban, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Search, FileText, Edit2, Ban, Loader2, AlertCircle } from 'lucide-react';
 import SaleModal from '../components/sales/SaleModal';
 import toast from 'react-hot-toast';
+
+// 👇 1. IMPORTAR PAGINACIÓN
+import TablePagination from '../components/ui/TablePagination';
 
 export default function Sales() {
   const [search, setSearch] = useState('');
   const [editingSale, setEditingSale] = useState(null);
   
-  // 1. Carga de Datos (Polling cada 5s para ver actualizaciones de otros usuarios)
+  // 👇 2. ESTADOS DE PAGINACIÓN
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Mostramos 10 ventas por página
+
+  // Carga de Datos
   const { data, loading, error } = useQuery(GET_SALES, { 
     pollInterval: 5000,
     fetchPolicy: 'network-only' 
   });
   
-  // 2. Mutación de Actualizar (Editar notas, precio, etc.)
   const [updateSale, { loading: updating }] = useMutation(UPDATE_SALE, {
      refetchQueries: [{ query: GET_SALES }]
   });
   
-  // 3. Mutación de Anular (Reemplaza al antiguo Delete)
   const [cancelSale] = useMutation(CANCEL_SALE, {
      refetchQueries: [{ query: GET_SALES }]
   });
 
-  // Filtros de Búsqueda (Vendedor, Teléfono o ID)
+  // Filtros de Búsqueda
   const sales = data?.sales?.filter(s => 
      s.seller.name.toLowerCase().includes(search.toLowerCase()) || 
      s.buyer_phone.includes(search) ||
      s.id_sale.toString().includes(search)
   ) || [];
 
-  // --- HANDLERS ---
+  // 👇 3. LÓGICA DE PAGINACIÓN
+  
+  // Resetear a página 1 si cambia la búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
+  // Calcular índices y cortar array
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSales = sales.slice(indexOfFirstItem, indexOfLastItem);
+
+
+  // --- HANDLERS ---
   const handleCancel = async (id) => {
       if (window.confirm("⚠️ ¿ANULAR esta venta?\n\nEl stock será devuelto automáticamente al vendedor y al almacén. Esta acción es irreversible.")) {
           try {
@@ -3714,7 +4336,8 @@ export default function Sales() {
                 </div>
             )}
 
-            {sales.map(sale => {
+            {/* 👇 4. USAMOS currentSales EN LUGAR DE sales */}
+            {currentSales.map(sale => {
                 const isCancelled = sale.status === 'CANCELLED';
 
                 return (
@@ -3803,6 +4426,14 @@ export default function Sales() {
                 );
             })}
         </div>
+        
+        {/* 👇 5. COMPONENTE DE PAGINACIÓN */}
+        <TablePagination 
+            currentPage={currentPage}
+            totalItems={sales.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+        />
 
         {/* MODAL DE EDICIÓN */}
         <SaleModal 
@@ -4221,9 +4852,16 @@ import { Truck, Plus, Edit2, Trash2, Calendar, Loader2, AlertCircle } from 'luci
 import ShipmentModal from '../components/shipments/ShipmentModal';
 import toast from 'react-hot-toast';
 
+// 👇 1. IMPORTAR PAGINACIÓN
+import TablePagination from '../components/ui/TablePagination';
+
 export default function Shipments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShipment, setEditingShipment] = useState(null);
+
+  // 👇 2. ESTADOS DE PAGINACIÓN
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Mostramos 8 envíos por página
 
   const { data, loading, error } = useQuery(GET_SHIPMENTS);
 
@@ -4237,6 +4875,15 @@ export default function Shipments() {
     refetchQueries: [{ query: GET_SHIPMENTS }]
   });
 
+  // --- LÓGICA DE DATOS ---
+  const allShipments = data?.shipments || [];
+
+  // 👇 3. CORTAR ARRAY PARA PAGINACIÓN
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentShipments = allShipments.slice(indexOfFirstItem, indexOfLastItem);
+
+  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingShipment(null);
     setIsModalOpen(true);
@@ -4247,18 +4894,17 @@ export default function Shipments() {
     setIsModalOpen(true);
   };
 
-  // Helper para mostrar fechas en la lista
-const getDisplayDate = (rawDate) => {
-  const date = new Date(Number(rawDate) || rawDate);
-  if (isNaN(date.getTime())) {
-    return { day: '--', month: '---', year: '----' };
-  }
-  return {
-    day: date.getDate(),
-    month: date.toLocaleString('es-ES', { month: 'short' }),
-    year: date.getFullYear()
+  const getDisplayDate = (rawDate) => {
+    const date = new Date(Number(rawDate) || rawDate);
+    if (isNaN(date.getTime())) {
+      return { day: '--', month: '---', year: '----' };
+    }
+    return {
+      day: date.getDate(),
+      month: date.toLocaleString('es-ES', { month: 'short' }),
+      year: date.getFullYear()
+    };
   };
-};
 
   const handleDelete = async (id) => {
     if (confirm('¿Eliminar este envío? Se perderá el registro de costos.')) {
@@ -4272,8 +4918,6 @@ const getDisplayDate = (rawDate) => {
   };
 
   const handleSave = async (data) => {
-    
-        // Preparamos el objeto con los datos
     const shipmentInput = {
       agency_name: data.agency_name,
       shipment_date: new Date(data.shipment_date).toISOString(),
@@ -4286,16 +4930,13 @@ const getDisplayDate = (rawDate) => {
 
     try {
       if (editingShipment) {
-        // CORRECCIÓN AQUÍ: Pasamos 'input' como objeto
         await updateShipment({
           variables: { 
             id_shipment: editingShipment.id_shipment, 
-            input: shipmentInput // <--- Empaquetado dentro de input
+            input: shipmentInput 
           }
         });
         toast.success('Envío actualizado');
-
-        
       } else {
         await createShipment({ variables: shipmentInput });
         toast.success('Envío registrado');
@@ -4325,41 +4966,43 @@ const getDisplayDate = (rawDate) => {
 
       {/* --- LISTA SIMPLIFICADA (Responsive) --- */}
       <div className="space-y-4">
-        {data?.shipments?.length === 0 && (
+        {allShipments.length === 0 && (
            <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl">
              <AlertCircle className="mx-auto text-gray-300 h-10 w-10 mb-2" />
              <p className="text-gray-500">No hay envíos registrados.</p>
            </div>
         )}
 
-         {data?.shipments?.map((item) => {
-          // Usamos el helper aquí
+         {/* 👇 4. MAPEAMOS 'currentShipments' EN LUGAR DE 'data.shipments' */}
+         {currentShipments.map((item) => {
           const dateData = getDisplayDate(item.shipment_date);
 
           return (
-            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between hover:shadow-md transition-shadow gap-4">
               
               <div className="flex items-center gap-4">
-                 {/* Icono Fecha corregido */}
-                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100">
+                 {/* Fecha */}
+                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100 flex-shrink-0">
                     <span>{dateData.day}</span>
                     <span className="uppercase">{dateData.month}</span>
                  </div>
                  
-                 {/* Datos Principales */}
-                 <div>
-                   <h3 className="font-bold text-gray-800 text-lg">{item.agency_name}</h3>
-                   <div className="flex items-center text-gray-500 text-sm">
+                 {/* Textos */}
+                 <div className="min-w-0">
+                   <h3 className="font-bold text-gray-800 text-lg truncate">{item.agency_name}</h3>
+                   <div className="flex items-center text-gray-500 text-sm flex-wrap">
                       <Calendar className="h-3 w-3 mr-1" />
                       {dateData.year}
-                      <span className="mx-2">•</span>
-                      <span className="text-gray-400 italic text-xs truncate max-w-[150px]">{item.notes || 'Sin notas'}</span>
+                      <span className="mx-2 hidden sm:inline">•</span>
+                      <span className="text-gray-400 italic text-xs truncate max-w-[200px] block w-full sm:w-auto mt-1 sm:mt-0">
+                        {item.notes || 'Sin notas'}
+                      </span>
                    </div>
                  </div>
               </div>
 
-              {/* Acciones */}
-              <div className="flex gap-2">
+              {/* Acciones (alineadas a la derecha en PC, full width en móvil si quieres, o dejarlas como están) */}
+              <div className="flex gap-2 self-end sm:self-auto">
                 <button onClick={() => handleOpenEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                    <Edit2 size={20} />
                 </button>
@@ -4371,10 +5014,15 @@ const getDisplayDate = (rawDate) => {
             </div>
           );
         })}
-
-
-
       </div>
+
+      {/* 👇 5. COMPONENTE DE PAGINACIÓN AL FINAL DE LA LISTA */}
+      <TablePagination 
+        currentPage={currentPage}
+        totalItems={allShipments.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+      />
 
       <ShipmentModal 
         isOpen={isModalOpen}
