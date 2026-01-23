@@ -33,7 +33,7 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         
         {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
-        <div className="mx-auto h-44 w-44 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+        <div className="mx-auto h-24 w-24 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
             <ShoppingCart className="text-white h-24 w-24 " />
         </div>
 
