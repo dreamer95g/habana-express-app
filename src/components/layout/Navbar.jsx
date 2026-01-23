@@ -38,7 +38,7 @@ export default function Navbar({ onMenuClick }) {
 
         const updatedUser = { ...user, ...res.data.updateUser };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload("https://habana-express.vercel.app"); 
+        window.location.reload(""); 
         
         toast.success('Perfil actualizado');
         setIsProfileModalOpen(false);

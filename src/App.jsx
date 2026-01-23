@@ -42,8 +42,8 @@ function App() {
       
       <Routes>
         {/* Ruta Pública */}
-        <Route path="/login" element={<Login />} />
-
+        {/* <Route path="/login" element={<Login />} /> */}
+<Route path="/login" element={<Login />} />
         {/* Rutas Privadas */}
         <Route 
           path="/" 
