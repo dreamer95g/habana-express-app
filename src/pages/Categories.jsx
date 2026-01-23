@@ -1,21 +1,28 @@
 // src/pages/Categories.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_CATEGORIES, CREATE_CATEGORY, UPDATE_CATEGORY, DELETE_CATEGORY } from '../graphql/categories';
 import { Search, Plus, Edit2, Trash2, Tag, Loader2, AlertCircle } from 'lucide-react';
 import CategoryModal from '../components/categories/CategoryModal';
 import toast from 'react-hot-toast';
 
+// 👇 Importamos el componente de paginación que acabamos de crear
+import TablePagination from '../components/ui/TablePagination';
+
 export default function Categories() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
 
+  // --- CONFIGURACIÓN DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Puedes cambiar este número (ej: 5, 8, 10)
+
   // --- GRAPHQL ---
   const { data, loading, error } = useQuery(GET_CATEGORIES);
   
   const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY, {
-    refetchQueries: [{ query: GET_CATEGORIES }], // Recarga la lista al terminar
+    refetchQueries: [{ query: GET_CATEGORIES }],
   });
 
   const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY, {
@@ -26,11 +33,27 @@ export default function Categories() {
     refetchQueries: [{ query: GET_CATEGORIES }],
   });
 
-  // --- LOGICA ---
+  // --- LOGICA DE FILTRADO ---
   const filteredCategories = data?.categories?.filter(cat => 
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
+  // --- LOGICA DE PAGINACIÓN (CLIENT SIDE) ---
+  
+  // 1. Resetea a la página 1 si el usuario escribe en el buscador
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // 2. Calcular índices para "cortar" el array
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  
+  // 3. Obtener solo los items de la página actual
+  const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
+
+
+  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingCategory(null);
     setIsModalOpen(true);
@@ -115,7 +138,7 @@ export default function Categories() {
         </div>
       ) : (
         <>
-          {/* VISTA DESKTOP (TABLA) - Oculta en pantallas pequeñas */}
+          {/* VISTA DESKTOP (TABLA) */}
           <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
@@ -127,7 +150,8 @@ export default function Categories() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filteredCategories.map((cat, index) => (
+                {/* 🔴 CAMBIO: Mapeamos 'currentItems' en vez de 'filteredCategories' */}
+                {currentItems.map((cat) => (
                   <tr key={cat.id_category} className="hover:bg-blue-50/30 transition-colors group">
                     <td className="px-6 py-4 text-gray-400 font-mono text-xs">#{cat.id_category}</td>
                     <td className="px-6 py-4 font-medium text-gray-800">{cat.name}</td>
@@ -156,9 +180,10 @@ export default function Categories() {
             </table>
           </div>
 
-          {/* VISTA MOVIL (TARJETAS) - Visible solo en pantallas pequeñas */}
+          {/* VISTA MOVIL (TARJETAS) */}
           <div className="md:hidden grid grid-cols-1 gap-4">
-            {filteredCategories.map((cat) => (
+            {/* 🔴 CAMBIO: Mapeamos 'currentItems' aquí también */}
+            {currentItems.map((cat) => (
               <div key={cat.id_category} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-800 text-lg">{cat.name}</h3>
@@ -186,6 +211,14 @@ export default function Categories() {
               </div>
             ))}
           </div>
+          
+          {/* 👇 AQUÍ INSERTAMOS EL COMPONENTE DE PAGINACIÓN */}
+          <TablePagination 
+            currentPage={currentPage}
+            totalItems={filteredCategories.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
 

@@ -6,9 +6,16 @@ import { Truck, Plus, Edit2, Trash2, Calendar, Loader2, AlertCircle } from 'luci
 import ShipmentModal from '../components/shipments/ShipmentModal';
 import toast from 'react-hot-toast';
 
+// 👇 1. IMPORTAR PAGINACIÓN
+import TablePagination from '../components/ui/TablePagination';
+
 export default function Shipments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShipment, setEditingShipment] = useState(null);
+
+  // 👇 2. ESTADOS DE PAGINACIÓN
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Mostramos 8 envíos por página
 
   const { data, loading, error } = useQuery(GET_SHIPMENTS);
 
@@ -22,6 +29,15 @@ export default function Shipments() {
     refetchQueries: [{ query: GET_SHIPMENTS }]
   });
 
+  // --- LÓGICA DE DATOS ---
+  const allShipments = data?.shipments || [];
+
+  // 👇 3. CORTAR ARRAY PARA PAGINACIÓN
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentShipments = allShipments.slice(indexOfFirstItem, indexOfLastItem);
+
+  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingShipment(null);
     setIsModalOpen(true);
@@ -32,18 +48,17 @@ export default function Shipments() {
     setIsModalOpen(true);
   };
 
-  // Helper para mostrar fechas en la lista
-const getDisplayDate = (rawDate) => {
-  const date = new Date(Number(rawDate) || rawDate);
-  if (isNaN(date.getTime())) {
-    return { day: '--', month: '---', year: '----' };
-  }
-  return {
-    day: date.getDate(),
-    month: date.toLocaleString('es-ES', { month: 'short' }),
-    year: date.getFullYear()
+  const getDisplayDate = (rawDate) => {
+    const date = new Date(Number(rawDate) || rawDate);
+    if (isNaN(date.getTime())) {
+      return { day: '--', month: '---', year: '----' };
+    }
+    return {
+      day: date.getDate(),
+      month: date.toLocaleString('es-ES', { month: 'short' }),
+      year: date.getFullYear()
+    };
   };
-};
 
   const handleDelete = async (id) => {
     if (confirm('¿Eliminar este envío? Se perderá el registro de costos.')) {
@@ -57,8 +72,6 @@ const getDisplayDate = (rawDate) => {
   };
 
   const handleSave = async (data) => {
-    
-        // Preparamos el objeto con los datos
     const shipmentInput = {
       agency_name: data.agency_name,
       shipment_date: new Date(data.shipment_date).toISOString(),
@@ -71,16 +84,13 @@ const getDisplayDate = (rawDate) => {
 
     try {
       if (editingShipment) {
-        // CORRECCIÓN AQUÍ: Pasamos 'input' como objeto
         await updateShipment({
           variables: { 
             id_shipment: editingShipment.id_shipment, 
-            input: shipmentInput // <--- Empaquetado dentro de input
+            input: shipmentInput 
           }
         });
         toast.success('Envío actualizado');
-
-        
       } else {
         await createShipment({ variables: shipmentInput });
         toast.success('Envío registrado');
@@ -110,41 +120,43 @@ const getDisplayDate = (rawDate) => {
 
       {/* --- LISTA SIMPLIFICADA (Responsive) --- */}
       <div className="space-y-4">
-        {data?.shipments?.length === 0 && (
+        {allShipments.length === 0 && (
            <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl">
              <AlertCircle className="mx-auto text-gray-300 h-10 w-10 mb-2" />
              <p className="text-gray-500">No hay envíos registrados.</p>
            </div>
         )}
 
-         {data?.shipments?.map((item) => {
-          // Usamos el helper aquí
+         {/* 👇 4. MAPEAMOS 'currentShipments' EN LUGAR DE 'data.shipments' */}
+         {currentShipments.map((item) => {
           const dateData = getDisplayDate(item.shipment_date);
 
           return (
-            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between hover:shadow-md transition-shadow gap-4">
               
               <div className="flex items-center gap-4">
-                 {/* Icono Fecha corregido */}
-                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100">
+                 {/* Fecha */}
+                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100 flex-shrink-0">
                     <span>{dateData.day}</span>
                     <span className="uppercase">{dateData.month}</span>
                  </div>
                  
-                 {/* Datos Principales */}
-                 <div>
-                   <h3 className="font-bold text-gray-800 text-lg">{item.agency_name}</h3>
-                   <div className="flex items-center text-gray-500 text-sm">
+                 {/* Textos */}
+                 <div className="min-w-0">
+                   <h3 className="font-bold text-gray-800 text-lg truncate">{item.agency_name}</h3>
+                   <div className="flex items-center text-gray-500 text-sm flex-wrap">
                       <Calendar className="h-3 w-3 mr-1" />
                       {dateData.year}
-                      <span className="mx-2">•</span>
-                      <span className="text-gray-400 italic text-xs truncate max-w-[150px]">{item.notes || 'Sin notas'}</span>
+                      <span className="mx-2 hidden sm:inline">•</span>
+                      <span className="text-gray-400 italic text-xs truncate max-w-[200px] block w-full sm:w-auto mt-1 sm:mt-0">
+                        {item.notes || 'Sin notas'}
+                      </span>
                    </div>
                  </div>
               </div>
 
-              {/* Acciones */}
-              <div className="flex gap-2">
+              {/* Acciones (alineadas a la derecha en PC, full width en móvil si quieres, o dejarlas como están) */}
+              <div className="flex gap-2 self-end sm:self-auto">
                 <button onClick={() => handleOpenEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                    <Edit2 size={20} />
                 </button>
@@ -156,10 +168,15 @@ const getDisplayDate = (rawDate) => {
             </div>
           );
         })}
-
-
-
       </div>
+
+      {/* 👇 5. COMPONENTE DE PAGINACIÓN AL FINAL DE LA LISTA */}
+      <TablePagination 
+        currentPage={currentPage}
+        totalItems={allShipments.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+      />
 
       <ShipmentModal 
         isOpen={isModalOpen}

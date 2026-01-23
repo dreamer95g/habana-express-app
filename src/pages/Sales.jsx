@@ -1,40 +1,57 @@
-import { useState } from 'react';
+// src/pages/Sales.jsx
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-// Asegúrate de que en graphql/sales.js tengas exportado CANCEL_SALE
 import { GET_SALES, UPDATE_SALE, CANCEL_SALE } from '../graphql/sales';
-import { Search, FileText, Edit2, Ban, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Search, FileText, Edit2, Ban, Loader2, AlertCircle } from 'lucide-react';
 import SaleModal from '../components/sales/SaleModal';
 import toast from 'react-hot-toast';
+
+// 👇 1. IMPORTAR PAGINACIÓN
+import TablePagination from '../components/ui/TablePagination';
 
 export default function Sales() {
   const [search, setSearch] = useState('');
   const [editingSale, setEditingSale] = useState(null);
   
-  // 1. Carga de Datos (Polling cada 5s para ver actualizaciones de otros usuarios)
+  // 👇 2. ESTADOS DE PAGINACIÓN
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Mostramos 10 ventas por página
+
+  // Carga de Datos
   const { data, loading, error } = useQuery(GET_SALES, { 
     pollInterval: 5000,
     fetchPolicy: 'network-only' 
   });
   
-  // 2. Mutación de Actualizar (Editar notas, precio, etc.)
   const [updateSale, { loading: updating }] = useMutation(UPDATE_SALE, {
      refetchQueries: [{ query: GET_SALES }]
   });
   
-  // 3. Mutación de Anular (Reemplaza al antiguo Delete)
   const [cancelSale] = useMutation(CANCEL_SALE, {
      refetchQueries: [{ query: GET_SALES }]
   });
 
-  // Filtros de Búsqueda (Vendedor, Teléfono o ID)
+  // Filtros de Búsqueda
   const sales = data?.sales?.filter(s => 
      s.seller.name.toLowerCase().includes(search.toLowerCase()) || 
      s.buyer_phone.includes(search) ||
      s.id_sale.toString().includes(search)
   ) || [];
 
-  // --- HANDLERS ---
+  // 👇 3. LÓGICA DE PAGINACIÓN
+  
+  // Resetear a página 1 si cambia la búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
+  // Calcular índices y cortar array
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSales = sales.slice(indexOfFirstItem, indexOfLastItem);
+
+
+  // --- HANDLERS ---
   const handleCancel = async (id) => {
       if (window.confirm("⚠️ ¿ANULAR esta venta?\n\nEl stock será devuelto automáticamente al vendedor y al almacén. Esta acción es irreversible.")) {
           try {
@@ -116,7 +133,8 @@ export default function Sales() {
                 </div>
             )}
 
-            {sales.map(sale => {
+            {/* 👇 4. USAMOS currentSales EN LUGAR DE sales */}
+            {currentSales.map(sale => {
                 const isCancelled = sale.status === 'CANCELLED';
 
                 return (
@@ -205,6 +223,14 @@ export default function Sales() {
                 );
             })}
         </div>
+        
+        {/* 👇 5. COMPONENTE DE PAGINACIÓN */}
+        <TablePagination 
+            currentPage={currentPage}
+            totalItems={sales.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+        />
 
         {/* MODAL DE EDICIÓN */}
         <SaleModal 

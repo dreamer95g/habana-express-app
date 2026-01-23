@@ -316,65 +316,99 @@ const [returnProduct] = useMutation(RETURN_PRODUCT_FROM_SELLER);
            </>
        )}
 
-       {/* VISTA 2: VENDEDORES */}
+      {/* VISTA 2: VENDEDORES */}
        {viewMode === 'sellers' && (
            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
                {!selectedSeller ? (
                    <div className="flex flex-col items-center justify-center h-full py-20 text-gray-400">
                        <Users className="h-16 w-16 mb-4 text-purple-200" />
-                       <p className="text-lg font-medium">Selecciona un vendedor para ver su inventario.</p>
+                       <p className="text-lg font-medium text-center px-4">Selecciona un vendedor arriba para ver su inventario.</p>
                    </div>
                ) : loadingSellerStock ? (
                    <div className="flex justify-center py-20"><Loader2 className="animate-spin text-purple-600 h-10 w-10" /></div>
                ) : filteredSellerStock.length === 0 ? (
                    <div className="text-center py-20 text-gray-500">
-                       <p>Este vendedor no tiene mercancía asignada que coincida con la búsqueda.</p>
+                       <p>Este vendedor no tiene esa mercancía.</p>
                    </div>
                ) : (
-                   <div className="overflow-x-auto">
-                       <table className="w-full text-left">
-                           <thead className="bg-purple-50 text-purple-900 border-b border-purple-100">
-                               <tr>
-                                   <th className="px-6 py-4 font-bold text-sm">Producto</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-center">En Posesión</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-right">Precio Venta (CUP)</th>
-                                   <th className="px-6 py-4 font-bold text-sm text-right">Acciones</th>
-                               </tr>
-                           </thead>
-                           <tbody className="divide-y divide-gray-50">
-                               {filteredSellerStock.map(item => (
-                                   <tr key={item.id_seller_product} className="hover:bg-gray-50 transition-colors">
-                                       <td className="px-6 py-4">
-                                           <div className="flex items-center gap-3">
-                                               <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                                   {item.product.photo_url && <img src={item.product.photo_url} className="w-full h-full object-cover" />}
-                                               </div>
-                                               <span className="font-medium text-gray-800">{item.product.name}</span>
-                                           </div>
-                                       </td>
-                                       <td className="px-6 py-4 text-center">
-                                           <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm">
-                                               {item.quantity} unid.
-                                           </span>
-                                       </td>
-                                       <td className="px-6 py-4 text-right font-mono font-bold text-gray-600">
-                                           {/* Aquí podrías calcular CUP real si tienes tasa, o mostrar USD */}
-                                            ${item.product.sale_price} <span className="text-xs text-gray-400">USD base</span>
-                                       </td>
-                                       <td className="px-6 py-4 text-right">
-                                           <button 
-                                             onClick={() => handleReturnStock(item)}
-                                             className="text-sm bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ml-auto"
-                                             title="Devolver al almacén principal"
-                                           >
-                                               <RefreshCw size={14} /> Devolver
-                                           </button>
-                                       </td>
+                   <>
+                       {/* --- VISTA ESCRITORIO (TABLA) --- */}
+                       <div className="hidden md:block overflow-x-auto">
+                           <table className="w-full text-left">
+                               <thead className="bg-purple-50 text-purple-900 border-b border-purple-100">
+                                   <tr>
+                                       <th className="px-6 py-4 font-bold text-sm">Producto</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-center">En Posesión</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-right">Precio Venta (CUP)</th>
+                                       <th className="px-6 py-4 font-bold text-sm text-right">Acciones</th>
                                    </tr>
-                               ))}
-                           </tbody>
-                       </table>
-                   </div>
+                               </thead>
+                               <tbody className="divide-y divide-gray-50">
+                                   {filteredSellerStock.map(item => (
+                                       <tr key={item.id_seller_product} className="hover:bg-gray-50 transition-colors">
+                                           <td className="px-6 py-4">
+                                               <div className="flex items-center gap-3">
+                                                   <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                       {item.product.photo_url && <img src={item.product.photo_url} className="w-full h-full object-cover" />}
+                                                   </div>
+                                                   <span className="font-medium text-gray-800">{item.product.name}</span>
+                                               </div>
+                                           </td>
+                                           <td className="px-6 py-4 text-center">
+                                               <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm">
+                                                   {item.quantity} unid.
+                                               </span>
+                                           </td>
+                                           <td className="px-6 py-4 text-right font-mono font-bold text-gray-600">
+                                                ${item.product.sale_price} <span className="text-xs text-gray-400">USD</span>
+                                           </td>
+                                           <td className="px-6 py-4 text-right">
+                                               <button 
+                                                 onClick={() => handleReturnStock(item)}
+                                                 className="text-sm bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ml-auto"
+                                               >
+                                                   <RefreshCw size={14} /> Devolver
+                                               </button>
+                                           </td>
+                                       </tr>
+                                   ))}
+                               </tbody>
+                           </table>
+                       </div>
+
+                       {/* --- VISTA MÓVIL (TARJETAS) --- */}
+                       <div className="md:hidden p-4 space-y-4">
+                           {filteredSellerStock.map(item => (
+                               <div key={item.id_seller_product} className="border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm">
+                                    <div className="h-16 w-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                        {item.product.photo_url ? (
+                                            <img src={item.product.photo_url} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <PackageOpen className="m-auto mt-4 text-gray-300"/>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-bold text-gray-800 text-sm truncate">{item.product.name}</h4>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold">
+                                                x{item.quantity}
+                                            </span>
+                                            <span className="text-xs text-gray-500 font-mono">
+                                                ${item.product.sale_price}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => handleReturnStock(item)}
+                                        className="p-2 bg-gray-50 text-red-500 rounded-lg border border-gray-200"
+                                        title="Devolver"
+                                    >
+                                        <RefreshCw size={18} />
+                                    </button>
+                               </div>
+                           ))}
+                       </div>
+                   </>
                )}
            </div>
        )}
