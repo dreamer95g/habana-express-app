@@ -19,11 +19,11 @@ export default function AdminDashboard() {
 
   // Preparar datos para gráficos
   const chartData = data?.annualReport?.breakdown.map(item => ({
-    name: MONTHS[item.month - 1], // Convertir 1 -> Ene
-    Inversión: item.investment,
-    Ganancia: item.profit,
-    ROI: item.roiPercentage
-  })) || [];
+  name: MONTHS[item.month - 1],
+  Inversión: item.investment, // Mostrará los 130 del envío
+  Ganancia: item.profit,       // Mostrará los 10 de utilidad de las ventas
+  ROI: item.roiPercentage
+})) || [];
 
   const topSellers = data?.topSellers || [];
 
@@ -45,7 +45,15 @@ export default function AdminDashboard() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
+                
+                <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{fontSize: 10, fontWeight: 'bold'}} 
+                />
+
+                
+                
                 <Tooltip contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
                 <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
                 
@@ -59,22 +67,47 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* GRÁFICO 2: ROI (BARRAS CON VALORES) */}
-      <div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-gray-100">
-        <h3 className="text-xs font-black text-gray-400 uppercase mb-6">Porcentaje de Retorno Mensual</h3>
-        <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} unit="%" />
-                <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{ borderRadius: '15px', border: 'none' }} />
-                {/* Mostramos el valor encima de la barra para que no haya que adivinar */}
-                <Bar dataKey="ROI" fill="#3b82f6" radius={[8, 8, 8, 8]} barSize={20} label={{ position: 'top', fontSize: 10, fontWeight: 'bold', fill: '#3b82f6' }} />
-              </BarChart>
-            </ResponsiveContainer>
-        </div>
-      </div>
+     {/* GRÁFICO 2: ROI (BARRAS CON VALORES) */}
+<div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-gray-100">
+  <h3 className="text-xs font-black text-gray-400 uppercase mb-6">Retorno sobre Inversión Mensual (%)</h3>
+  <div className="h-64 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
+          
+          {/* Forzamos el eje Y a empezar en 0 */}
+          <YAxis 
+            axisLine={false} 
+            tickLine={false} 
+            tick={{fontSize: 10, fontWeight: 'bold'}} 
+            unit="%" 
+            domain={[0, 'auto']} 
+          />
+          
+          <Tooltip 
+            cursor={{fill: '#f9fafb'}} 
+            contentStyle={{ borderRadius: '15px', border: 'none' }} 
+            formatter={(value) => [`${value}%`, 'Retorno']}
+          />
+          
+          <Bar 
+            dataKey="ROI" 
+            fill="#3b82f6" 
+            radius={[8, 8, 8, 8]} 
+            barSize={20} 
+            label={{ 
+              position: 'top', 
+              fontSize: 10, 
+              fontWeight: 'bold', 
+              fill: '#3b82f6',
+              formatter: (val) => `${val}%` 
+            }} 
+          />
+        </BarChart>
+      </ResponsiveContainer>
+  </div>
+</div>
 
 
       {/* 2. SECCIÓN RANKING DE VENDEDORES (Con Fotos) */}

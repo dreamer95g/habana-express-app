@@ -72,10 +72,10 @@ return (
         {/* --- CABECERA CON LOGO --- */}
         <div className="flex flex-col items-center justify-center py-6 px-4 border-b border-gray-50 bg-gradient-to-b from-gray-50/50 to-white flex-shrink-0">
           <div className="relative h-20 w-full flex items-center justify-center">
-             <div className="absolute inset-0 bg-blue-50 rounded-[2rem] opacity-40 blur-md transform scale-75"></div>
+             <div className="absolute inset-0 bg-blue-50 rounded-full opacity-40 blur-md transform scale-75"></div>
              <img 
                 src={systemLogo || defaultLogo} 
-                className="relative max-h-full max-w-[80%] object-contain" 
+                className="relative max-h-full max-w-[80%] object-contain rounded-full" 
                 alt="Habana Express"
              />
           </div>
