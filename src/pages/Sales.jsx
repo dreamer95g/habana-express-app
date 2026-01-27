@@ -2,24 +2,19 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SALES, UPDATE_SALE, CANCEL_SALE } from '../graphql/sales';
-import { Search, FileText, Edit2, Ban, Loader2, AlertCircle } from 'lucide-react';
+import { Search, FileText, Edit2, Ban, Loader2, AlertCircle, Calendar, User, Phone, DollarSign, CreditCard } from 'lucide-react';
 import SaleModal from '../components/sales/SaleModal';
-import toast from 'react-hot-toast';
-
-// 👇 1. IMPORTAR PAGINACIÓN
 import TablePagination from '../components/ui/TablePagination';
+import toast from 'react-hot-toast';
 
 export default function Sales() {
   const [search, setSearch] = useState('');
   const [editingSale, setEditingSale] = useState(null);
-  
-  // 👇 2. ESTADOS DE PAGINACIÓN
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Mostramos 10 ventas por página
+  const itemsPerPage = 10;
 
-  // Carga de Datos
   const { data, loading, error } = useQuery(GET_SALES, { 
-    pollInterval: 5000,
+    pollInterval: 10000,
     fetchPolicy: 'network-only' 
   });
   
@@ -31,35 +26,27 @@ export default function Sales() {
      refetchQueries: [{ query: GET_SALES }]
   });
 
-  // Filtros de Búsqueda
   const sales = data?.sales?.filter(s => 
      s.seller.name.toLowerCase().includes(search.toLowerCase()) || 
      s.buyer_phone.includes(search) ||
      s.id_sale.toString().includes(search)
   ) || [];
 
-  // 👇 3. LÓGICA DE PAGINACIÓN
-  
-  // Resetear a página 1 si cambia la búsqueda
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
 
-  // Calcular índices y cortar array
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentSales = sales.slice(indexOfFirstItem, indexOfLastItem);
 
-
-  // --- HANDLERS ---
   const handleCancel = async (id) => {
-      if (window.confirm("⚠️ ¿ANULAR esta venta?\n\nEl stock será devuelto automáticamente al vendedor y al almacén. Esta acción es irreversible.")) {
+      if (window.confirm("⚠️ ¿ANULAR esta venta? El stock volverá al inventario.")) {
           try {
               await cancelSale({ variables: { id_sale: id } });
-              toast.success("Venta anulada correctamente.");
+              toast.success("Venta anulada");
           } catch (e) {
-              console.error(e);
-              toast.error(e.message || "Error al anular venta");
+              toast.error(e.message);
           }
       }
   };
@@ -85,146 +72,150 @@ export default function Sales() {
       }
   };
 
-  // --- RENDERS DE ESTADO ---
-
   if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin h-10 w-10 text-blue-600"/></div>;
   
   if (error) return (
     <div className="flex flex-col items-center justify-center p-10 text-red-500">
         <AlertCircle className="h-10 w-10 mb-2"/>
         <p className="font-bold">Error cargando ventas</p>
-        <p className="text-sm">{error.message}</p>
-        <p className="text-xs mt-2 text-gray-500">Intenta reiniciar el backend o ejecutar 'npx prisma db push'</p>
     </div>
   );
 
   return (
-    <div className="pb-20 max-w-7xl mx-auto">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <FileText className="mr-3 text-blue-600"/> Historial de Ventas
+    <div className="pb-20 max-w-7xl mx-auto px-2 md:px-0">
+        
+        {/* --- HEADER CORREGIDO --- */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="text-left"> {/* Aseguramos alineación izquierda */}
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center">
+                    <FileText className="mr-3 text-blue-600" size={28}/> Historial de Ventas
                 </h1>
                 <p className="text-gray-500 text-sm mt-1">
-                    Registro de operaciones y anulaciones.
+                    Registro de operaciones y control de ingresos.
                 </p>
             </div>
         </div>
 
-        {/* BUSCADOR */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
-             <div className="relative">
-                 <Search className="absolute left-3 top-3 text-gray-400 h-5 w-5"/>
-                 <input 
-                   type="text" 
-                   placeholder="Buscar por ID, Vendedor o Teléfono Cliente..." 
-                   className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                   value={search} onChange={e => setSearch(e.target.value)}
-                 />
-             </div>
+        {/* BUSCADOR ESTILO CATEGORIAS */}
+        <div className="relative mb-6">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar por ID, vendedor o cliente..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+          />
         </div>
 
-        {/* LISTA DE VENTAS */}
-        <div className="space-y-3">
-            {sales.length === 0 && (
-                <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
-                    <p>No se encontraron ventas con ese criterio.</p>
+        {/* LISTA DE VENTAS MEJORADA */}
+        <div className="space-y-4">
+            {currentSales.length === 0 && (
+                <div className="text-center py-12 text-gray-400 bg-white rounded-2xl border border-dashed border-gray-200">
+                    <p>No se encontraron registros.</p>
                 </div>
             )}
 
-            {/* 👇 4. USAMOS currentSales EN LUGAR DE sales */}
             {currentSales.map(sale => {
                 const isCancelled = sale.status === 'CANCELLED';
+                const date = new Date(Number(sale.sale_date));
 
                 return (
                     <div 
                         key={sale.id_sale} 
-                        className={`p-4 rounded-xl shadow-sm border transition-all duration-200 flex flex-col md:flex-row items-center justify-between gap-4 group 
-                        ${isCancelled ? 'bg-red-50/50 border-red-100 opacity-80' : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md'}`}
+                        className={`relative overflow-hidden bg-white rounded-2xl border transition-all duration-300 shadow-sm hover:shadow-md 
+                        ${isCancelled ? 'border-red-100 bg-red-50/30' : 'border-gray-100 hover:border-blue-200'}`}
                     >
-                        
-                        {/* 1. INFO IZQUIERDA: ID, Vendedor, Fecha */}
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                            <div className={`h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 
-                                ${isCancelled ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-600'}`}>
-                                {isCancelled ? <Ban size={20}/> : sale.seller.name.charAt(0)}
-                            </div>
+                        {/* Indicador lateral de estado */}
+                        <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isCancelled ? 'bg-red-400' : 'bg-blue-500'}`}></div>
+
+                        <div className="p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono text-xs text-gray-400 font-bold">#{sale.id_sale}</span>
-                                    {isCancelled && (
-                                        <span className="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide border border-red-200">
-                                            Anulada
-                                        </span>
+                            {/* Bloque 1: Identificación y Vendedor */}
+                            <div className="flex items-center gap-4">
+                                <div className={`h-12 w-12 rounded-xl flex items-center justify-center font-bold flex-shrink-0 shadow-sm
+                                    ${isCancelled ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                    {isCancelled ? <Ban size={20}/> : <User size={20}/>}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID #{sale.id_sale}</span>
+                                        {isCancelled && (
+                                            <span className="bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase shadow-sm">
+                                                Anulada
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h3 className={`font-bold text-lg leading-tight ${isCancelled ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                                        {sale.seller.name}
+                                    </h3>
+                                    <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                                        <Calendar size={12} />
+                                        <span>{date.toLocaleDateString()}</span>
+                                        <span className="text-gray-300">•</span>
+                                        <span>{date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Bloque 2: Monto y Pago (Muy visual en móvil) */}
+                            <div className="flex items-center justify-between md:justify-center md:flex-col border-y md:border-y-0 py-3 md:py-0 border-gray-50">
+                                <div className="text-left md:text-center">
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase block md:mb-1">Total Cobrado</span>
+                                    <p className={`text-2xl font-black ${isCancelled ? 'text-gray-300 line-through' : 'text-blue-600'}`}>
+                                        ${new Intl.NumberFormat().format(sale.total_cup)}<span className="text-xs ml-1">CUP</span>
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2 md:mt-1">
+                                    <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg ${sale.payment_method === 'cash' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}`}>
+                                        {sale.payment_method === 'cash' ? <DollarSign size={10}/> : <CreditCard size={10}/>}
+                                        {sale.payment_method === 'cash' ? 'EFECTIVO' : 'TRANSF.'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Bloque 3: Cliente y Acciones */}
+                            <div className="flex items-center justify-between md:gap-6">
+                                <div className="text-left md:text-right">
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Cliente</span>
+                                    <div className="flex items-center gap-1.5 font-mono font-bold text-gray-700">
+                                        <Phone size={12} className="text-gray-400"/>
+                                        {sale.buyer_phone}
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    {!isCancelled ? (
+                                        <>
+                                            <button 
+                                                onClick={() => setEditingSale(sale)}
+                                                className="p-3 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all active:scale-90"
+                                            >
+                                                <Edit2 size={18} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleCancel(sale.id_sale)}
+                                                className="p-3 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-all active:scale-90"
+                                            >
+                                                <Ban size={18} />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="px-4 py-2 bg-gray-100 text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                                            Archivo
+                                        </div>
                                     )}
                                 </div>
-                                <p className={`font-bold leading-tight ${isCancelled ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
-                                    {sale.seller.name}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                    {new Date(Number(sale.sale_date)).toLocaleDateString()} • {new Date(Number(sale.sale_date)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                </p>
                             </div>
+
                         </div>
-
-                        {/* 2. INFO CENTRO: Dinero */}
-                        <div className="text-left md:text-center w-full md:w-auto pl-16 md:pl-0">
-                            <p className={`text-xl font-extrabold ${isCancelled ? 'text-gray-400 line-through decoration-red-400' : 'text-blue-600'}`}>
-                                ${sale.total_cup} <span className="text-xs font-normal text-gray-400">CUP</span>
-                            </p>
-                            <div className="flex items-center md:justify-center gap-2 text-xs text-gray-500 font-medium">
-                                <span className="bg-gray-100 px-2 py-0.5 rounded">
-                                    {sale.payment_method === 'cash' ? 'Efectivo' : 'Transferencia'}
-                                </span>
-                                <span className="text-gray-300">|</span>
-                                <span>Tasa: {sale.exchange_rate}</span>
-                            </div>
-                        </div>
-
-                        {/* 3. INFO DERECHA: Cliente & Botones */}
-                        <div className="flex items-center justify-between w-full md:w-auto gap-6 pl-16 md:pl-0">
-                            <div className="text-left md:text-right">
-                                <p className="font-mono font-bold text-gray-700">{sale.buyer_phone}</p>
-                                <p className="text-xs text-gray-400 truncate max-w-[120px]" title={sale.notes}>
-                                    {sale.notes || "—"}
-                                </p>
-                            </div>
-
-                            <div className="flex gap-2">
-                                {/* Solo mostramos botones si NO está cancelada */}
-                                {!isCancelled ? (
-                                    <>
-                                        <button 
-                                            onClick={() => setEditingSale(sale)}
-                                            className="p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-                                            title="Editar detalles (Notas, Método Pago)"
-                                        >
-                                            <Edit2 size={18} />
-                                        </button>
-                                        <button 
-                                            onClick={() => handleCancel(sale.id_sale)}
-                                            className="p-2.5 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                                            title="Anular Venta (Devolver Stock)"
-                                        >
-                                            <Ban size={18} />
-                                        </button>
-                                    </>
-                                ) : (
-                                    <div className="px-3 py-2 bg-gray-100 rounded-lg text-xs text-gray-400 font-bold italic select-none">
-                                        Cerrada
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
                     </div>
                 );
             })}
         </div>
         
-        {/* 👇 5. COMPONENTE DE PAGINACIÓN */}
         <TablePagination 
             currentPage={currentPage}
             totalItems={sales.length}
@@ -232,7 +223,6 @@ export default function Sales() {
             onPageChange={setCurrentPage}
         />
 
-        {/* MODAL DE EDICIÓN */}
         <SaleModal 
             isOpen={!!editingSale}
             onClose={() => setEditingSale(null)}

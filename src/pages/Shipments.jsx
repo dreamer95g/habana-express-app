@@ -2,20 +2,16 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SHIPMENTS, CREATE_SHIPMENT, UPDATE_SHIPMENT, DELETE_SHIPMENT } from '../graphql/shipments';
-import { Truck, Plus, Edit2, Trash2, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import { Truck, Plus, Edit2, Trash2, Calendar, Loader2, AlertCircle, DollarSign, Globe, ClipboardList } from 'lucide-react';
 import ShipmentModal from '../components/shipments/ShipmentModal';
 import toast from 'react-hot-toast';
-
-// 👇 1. IMPORTAR PAGINACIÓN
 import TablePagination from '../components/ui/TablePagination';
 
 export default function Shipments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShipment, setEditingShipment] = useState(null);
-
-  // 👇 2. ESTADOS DE PAGINACIÓN
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Mostramos 8 envíos por página
+  const itemsPerPage = 10;
 
   const { data, loading, error } = useQuery(GET_SHIPMENTS);
 
@@ -29,15 +25,11 @@ export default function Shipments() {
     refetchQueries: [{ query: GET_SHIPMENTS }]
   });
 
-  // --- LÓGICA DE DATOS ---
   const allShipments = data?.shipments || [];
-
-  // 👇 3. CORTAR ARRAY PARA PAGINACIÓN
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentShipments = allShipments.slice(indexOfFirstItem, indexOfLastItem);
 
-  // --- HANDLERS ---
   const handleOpenCreate = () => {
     setEditingShipment(null);
     setIsModalOpen(true);
@@ -85,10 +77,7 @@ export default function Shipments() {
     try {
       if (editingShipment) {
         await updateShipment({
-          variables: { 
-            id_shipment: editingShipment.id_shipment, 
-            input: shipmentInput 
-          }
+          variables: { id_shipment: editingShipment.id_shipment, input: shipmentInput }
         });
         toast.success('Envío actualizado');
       } else {
@@ -101,68 +90,108 @@ export default function Shipments() {
     }
   };
 
-  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-blue-600" /></div>;
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-blue-600 h-10 w-10" /></div>;
   if (error) return <p className="text-center text-red-500 p-10">Error cargando envíos</p>;
 
   return (
-    <div className="pb-20">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center">
-            <Truck className="mr-3 text-blue-600" /> Gestión de Envíos
+    <div className="pb-20 max-w-7xl mx-auto px-2 md:px-0">
+      
+      {/* --- HEADER MEJORADO (Botón debajo en móvil) --- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="text-left">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center">
+            <Truck className="mr-3 text-blue-600" size={28} /> Gestión de Envíos
           </h1>
-          <p className="text-gray-500 text-sm">Control de importaciones y costos.</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Control de importaciones y logística internacional.
+          </p>
         </div>
-        <button onClick={handleOpenCreate} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg flex items-center transition-transform active:scale-95">
-          <Plus className="mr-2 h-5 w-5" /> Nuevo Envío
+        
+        {/* El botón ahora es w-full en móvil por defecto y w-auto en tablets/pc */}
+        <button 
+          onClick={handleOpenCreate} 
+          className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-200 flex items-center justify-center transition-all active:scale-95"
+        >
+          <Plus className="mr-2 h-5 w-5" /> Registrar Nuevo Envío
         </button>
       </div>
 
-      {/* --- LISTA SIMPLIFICADA (Responsive) --- */}
+      {/* --- LISTA DE ENVÍOS ESTILO "FINANCIAL" --- */}
       <div className="space-y-4">
         {allShipments.length === 0 && (
-           <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl">
-             <AlertCircle className="mx-auto text-gray-300 h-10 w-10 mb-2" />
-             <p className="text-gray-500">No hay envíos registrados.</p>
+           <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-200">
+             <AlertCircle className="mx-auto text-gray-300 h-12 w-12 mb-3" />
+             <p className="text-gray-500 font-medium">No hay envíos registrados.</p>
            </div>
         )}
 
-         {/* 👇 4. MAPEAMOS 'currentShipments' EN LUGAR DE 'data.shipments' */}
-         {currentShipments.map((item) => {
+        {currentShipments.map((item) => {
           const dateData = getDisplayDate(item.shipment_date);
+          const totalUsd = item.shipping_cost_usd + item.merchandise_cost_usd;
 
           return (
-            <div key={item.id_shipment} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between hover:shadow-md transition-shadow gap-4">
+            <div key={item.id_shipment} className="relative overflow-hidden bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all">
               
-              <div className="flex items-center gap-4">
-                 {/* Fecha */}
-                 <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs border border-blue-100 flex-shrink-0">
-                    <span>{dateData.day}</span>
-                    <span className="uppercase">{dateData.month}</span>
-                 </div>
-                 
-                 {/* Textos */}
-                 <div className="min-w-0">
-                   <h3 className="font-bold text-gray-800 text-lg truncate">{item.agency_name}</h3>
-                   <div className="flex items-center text-gray-500 text-sm flex-wrap">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {dateData.year}
-                      <span className="mx-2 hidden sm:inline">•</span>
-                      <span className="text-gray-400 italic text-xs truncate max-w-[200px] block w-full sm:w-auto mt-1 sm:mt-0">
-                        {item.notes || 'Sin notas'}
-                      </span>
+              <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
+                
+                {/* 1. Agencia y Fecha */}
+                <div className="flex items-center gap-4">
+                   <div className="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex flex-col items-center justify-center font-black border border-blue-100 flex-shrink-0 shadow-sm">
+                      <span className="text-lg leading-none">{dateData.day}</span>
+                      <span className="text-[10px] uppercase">{dateData.month}</span>
                    </div>
-                 </div>
-              </div>
+                   
+                   <div className="min-w-0">
+                     <h3 className="font-bold text-gray-800 text-lg leading-tight truncate">{item.agency_name}</h3>
+                     <div className="flex items-center text-gray-500 text-xs mt-1 font-medium">
+                        <Globe size={12} className="mr-1 text-blue-400" />
+                        Tasa: {item.exchange_rate} CUP
+                        <span className="mx-2 text-gray-300">•</span>
+                        <span className="truncate">{item.notes || 'Sin observaciones'}</span>
+                     </div>
+                   </div>
+                </div>
 
-              {/* Acciones (alineadas a la derecha en PC, full width en móvil si quieres, o dejarlas como están) */}
-              <div className="flex gap-2 self-end sm:self-auto">
-                <button onClick={() => handleOpenEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                   <Edit2 size={20} />
-                </button>
-                <button onClick={() => handleDelete(item.id_shipment)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                   <Trash2 size={20} />
-                </button>
+                {/* 2. Resumen de Costos (Muy visual) */}
+                <div className="grid grid-cols-2 md:flex md:items-center gap-4 md:gap-8 border-y md:border-y-0 py-3 md:py-0 border-gray-50">
+                  <div className="text-left md:text-center">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block mb-0.5">Inversión Total</span>
+                    <p className="text-lg font-black text-gray-800">${totalUsd.toFixed(2)}<span className="text-[10px] ml-1 text-gray-400">USD</span></p>
+                  </div>
+                  <div className="text-left md:text-center">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block mb-0.5">Arancel Aduana</span>
+                    <p className="text-lg font-black text-orange-600">${item.customs_fee_cup.toFixed(0)}<span className="text-[10px] ml-1 text-gray-400">CUP</span></p>
+                  </div>
+                </div>
+
+                {/* 3. Acciones */}
+                <div className="flex gap-2 justify-end">
+                  <button 
+                    onClick={() => handleOpenEdit(item)} 
+                    className="p-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-all active:scale-90"
+                    title="Editar envío"
+                  >
+                    <Edit2 size={20} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(item.id_shipment)} 
+                    className="p-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl transition-all active:scale-90"
+                    title="Eliminar registro"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+
+              </div>
+              
+              {/* Badge discreto de "Detalles" en móvil */}
+              <div className="mt-3 flex items-center gap-3 md:hidden">
+                 <div className="flex items-center gap-1 text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded-lg font-bold">
+                    <ClipboardList size={10}/> ENVÍO: ${item.shipping_cost_usd}
+                 </div>
+                 <div className="flex items-center gap-1 text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded-lg font-bold">
+                    <DollarSign size={10}/> PRODUCTOS: ${item.merchandise_cost_usd}
+                 </div>
               </div>
 
             </div>
@@ -170,7 +199,6 @@ export default function Shipments() {
         })}
       </div>
 
-      {/* 👇 5. COMPONENTE DE PAGINACIÓN AL FINAL DE LA LISTA */}
       <TablePagination 
         currentPage={currentPage}
         totalItems={allShipments.length}

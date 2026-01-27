@@ -22,77 +22,58 @@ export default function Dashboard() {
   const isAdmin = user.role === 'admin'; // Verificar si es admin
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 pb-20 px-2 md:px-0">
       
-      {/* 1. HEADER */}
-      <div className="flex items-center justify-between">
-        <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-                {isSeller ? `Hola, ${user.name}` : 'Panel de Control'}
-            </h1>
-            <p className="text-gray-500">
-                {isSeller ? 'Resumen de tu actividad comercial.' : 'Resumen global del negocio.'}
-            </p>
-        </div>
+      {/* 1. HEADER SUGERENTE */}
+      <div className="text-left border-l-4 border-blue-600 pl-4 py-1">
+          <h1 className="text-2xl md:text-3xl font-black text-gray-800 tracking-tight">
+              {isSeller ? `¡A vender, ${user.name.split(' ')[0]}!` : 'Ecosistema Comercial'}
+          </h1>
+          <p className="text-gray-400 text-sm font-medium">
+              Control de Parámetros y Rendimiento Operativo
+          </p>
       </div>
 
-      {/* 2. TARJETAS RESUMEN (PARA TODOS) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 2. TARJETAS RESUMEN (Color corregido y Layout) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
         
+        {/* Tasa del Día */}
+        <div className="col-span-2 md:col-span-1 bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden group">
+           <div className="z-10 relative">
+              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded-lg">Tasa de Mercado</span>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-4xl font-black text-gray-800">${exchangeRate}</span>
+                <span className="text-xs font-bold text-gray-400">CUP</span>
+              </div>
+           </div>
+           <TrendingUp className="absolute -right-4 -bottom-4 h-24 w-24 text-gray-50 opacity-50" />
+        </div>
+
         {/* Ventas */}
-        <div className="bg-gradient-to-br from-blue-600 to-blue-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
-           <div className="relative z-10">
-              <h3 className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                 <ShoppingBag size={14}/>
-                 {isSeller ? "Mis Ventas Totales" : "Total Global Vendido"}
-              </h3>
-              <div className="flex items-end">
-                <span className="text-4xl font-bold">{totalItemsSold}</span>
-                <span className="mb-1.5 ml-2 text-blue-100 text-sm font-medium">unidades</span>
-              </div>
+        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 rounded-[2rem] shadow-lg shadow-blue-100 text-white relative overflow-hidden">
+           <div className="z-10 relative">
+              <ShoppingBag size={20} className="mb-3" />
+              <p className="text-[10px] font-bold uppercase opacity-80">Unidades Vendidas</p>
+              <p className="text-3xl font-black">{totalItemsSold}</p>
            </div>
-           <ShoppingBag className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
+           <div className="absolute top-0 right-0 p-4 opacity-10"><ShoppingBag size={60} /></div>
         </div>
 
-        {/* Stock */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden group">
-           <div className="relative z-10">
-              <h3 className="text-indigo-100 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                 {isSeller ? <UserCheck size={14}/> : <Globe size={14}/>}
-                 {isSeller ? "En mi Posesión" : "Catálogo Global Activo"}
-              </h3>
-              <div className="flex items-end">
-                <span className="text-4xl font-bold">{activeProductsCount}</span>
-                <span className="mb-1.5 ml-2 text-indigo-100 text-sm font-medium">
-                    {isSeller ? 'productos asignados' : 'SKUs en almacén'}
-                </span>
-              </div>
+        {/* Stock - COLOR CAMBIADO DE NEGRO A ÍNDIGO SUAVE */}
+        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-5 rounded-[2rem] shadow-lg shadow-purple-100 text-white relative overflow-hidden">
+           <div className="z-10 relative">
+              <Package size={20} className="mb-3" />
+              <p className="text-[10px] font-bold uppercase opacity-80">Stock en Catálogo</p>
+              <p className="text-3xl font-black">{activeProductsCount}</p>
            </div>
-           <Package className="absolute right-[-10px] bottom-[-10px] h-24 w-24 text-white opacity-10 group-hover:scale-110 transition-transform" />
-        </div>
-
-        {/* Tasa */}
-        <div className="bg-gradient-to-br from-orange-500 to-red-500 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden">
-           <div className="relative z-10">
-              <h3 className="text-white/80 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <TrendingUp size={14}/>
-                  Tasa del Día (CUP)
-              </h3>
-              <div className="flex items-end">
-                <span className="text-4xl font-bold">{exchangeRate}</span>
-                <span className="mb-1.5 ml-2 text-white/80 text-sm font-medium">x 1 USD</span>
-              </div>
-              <p className="text-[10px] text-white/60 mt-3">Base para cálculo de precios</p>
-           </div>
-           <TrendingUp className="absolute right-[-10px] bottom-[-10px] h-28 w-28 text-white opacity-10" />
+           <div className="absolute top-0 right-0 p-4 opacity-10"><Package size={60} /></div>
         </div>
       </div>
 
-      {/* 3. SECCIÓN EXCLUSIVA DE ADMIN (GRÁFICOS) */}
       {isAdmin && (
          <div className="mt-10">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 px-1 border-l-4 border-blue-600 pl-3">
-              Análisis Financiero
+            <h2 className="text-lg font-black text-gray-800 mb-6 flex items-center gap-2">
+               <TrendingUp className="text-blue-600"/> Análisis de Crecimiento
             </h2>
             <AdminDashboard />
          </div>

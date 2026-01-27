@@ -1,7 +1,14 @@
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\.env
 ============================================
-VITE_API_URL=http://localhost:4000
+#VITE_API_URL=http://213.232.235.205:4000
+#VITE_API_URL=http://localhost:4000
+
+VITE_API_URL= https://natalya-euphoric-unseverely.ngrok-free.dev
+
+
+
+
 
 ============================================
 Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\eslint.config.js
@@ -44,7 +51,7 @@ Archivo: C:\Users\gabry\Desktop\Habana Express Store\habana-express-app\index.ht
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/ddnqbgqfn/image/upload/v1769203978/habana_express_store/img-1769203977468-335840417-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Habana Express Store</title>
   </head>
@@ -392,8 +399,8 @@ function App() {
       
       <Routes>
         {/* Ruta Pública */}
-        <Route path="/login" element={<Login />} />
-
+        {/* <Route path="/login" element={<Login />} /> */}
+<Route path="/login" element={<Login />} />
         {/* Rutas Privadas */}
         <Route 
           path="/" 
@@ -908,7 +915,7 @@ export default function Navbar({ onMenuClick }) {
 
         const updatedUser = { ...user, ...res.data.updateUser };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(); 
+        window.location.reload(""); 
         
         toast.success('Perfil actualizado');
         setIsProfileModalOpen(false);
@@ -997,14 +1004,16 @@ export default function Navbar({ onMenuClick }) {
                     <User className="text-white h-6 w-6" />
                 )}
             </div>
-            <ChevronDown className="h-4 w-4 text-blue-200" />
+            {/* <ChevronDown className="h-4 w-4 text-blue-200" /> */}
         </button>
 
         {/* Dropdown Menu */}
+        
         <div className={clsx(
             "absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl py-2 transform transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5 z-50",
             isDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
         )}>
+
             {/* Header del Dropdown con Teléfono */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                 <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Cuenta Conectada</p>
@@ -3655,7 +3664,7 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         
         {/* 2. CAMBIO: Logo Circular Naranja con Carrito */}
-        <div className="mx-auto h-44 w-44 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
+        <div className="mx-auto h-36 w-36 bg-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-orange-200 transform hover:scale-105 transition-transform duration-300">
             <ShoppingCart className="text-white h-24 w-24 " />
         </div>
 
@@ -4304,7 +4313,7 @@ export default function Sales() {
   return (
     <div className="pb-20 max-w-7xl mx-auto">
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
             <div>
                 <h1 className="text-2xl font-bold text-gray-800 flex items-center">
                     <FileText className="mr-3 text-blue-600"/> Historial de Ventas
@@ -4711,6 +4720,7 @@ const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
                     <input {...register('company_phone')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
                 
+                <br/>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center"><Mail size={16} className="mr-2 text-gray-400"/> Email</label>
                     <input {...register('company_email')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
@@ -4803,7 +4813,7 @@ const [triggerSync, { loading: syncing }] = useMutation(TRIGGER_SYNC);
 
             <div className="lg:col-span-1 space-y-4 border-l border-gray-100 lg:pl-6">
               <h3 className="font-semibold text-gray-700 flex items-center text-sm uppercase">
-                <Calendar size={16} className="mr-2" /> Reporte Anual
+                <Calendar size={16} className="mr-2" /> Reporte Anual (Diciembre)
               </h3>
                <div className="grid grid-cols-2 gap-3">
                 <input type="number" min="1" max="31" {...register('annual_report_day')} placeholder="Día" className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none" />

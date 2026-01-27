@@ -4,40 +4,46 @@ import { X, Save, Loader2, ShieldCheck, FileText, Truck } from 'lucide-react';
 import ImageDropzone from '../ui/ImageDropzone';
 
 export default function ProductModal({ isOpen, onClose, productToEdit, categories, onSave, isSaving }) {
-  // 1️⃣ CHANGE: Añadimos defaultValues al useForm para evitar problemas de undefined
-  const { register, handleSubmit, reset, control, setValue, watch } = useForm({
-     defaultValues: {
-         name: '',
-         description: '',
-         stock: 1,
-         purchase_price: 0,
-         sale_price: 0,
-         categoryIds: []
-     }
-  });
+  
+  const emptyState = {
+  name: '',
+  description: '',
+  stock: 1,
+  purchase_price: 0,
+  sale_price: 0,
+  sku: '',
+  supplier_name: '',
+  photo_url: '',
+  warranty: false,
+  categoryIds: []
+};
 
+const { register, handleSubmit, reset, control, setValue } = useForm({
+    defaultValues: emptyState
+  });
+  
+   
   // 2️⃣ CHANGE: Efecto de carga corregido
   useEffect(() => {
     if (isOpen) {
       if (productToEdit) {
-        // Mapeo de categorías seguro: Extraer IDs y convertirlos a string para el select multiple
+        // MODO EDICIÓN: Cargamos datos del producto
         const catIds = productToEdit.product_categories?.map(pc => String(pc.category.id_category)) || [];
-        
-        // Usamos reset con TODOS los valores para asegurar que el formulario se llene de golpe
         reset({
-            name: productToEdit.name,
-            description: productToEdit.description || '', // 🔥 Arregla descripción vacía
-            sku: productToEdit.sku || '',
-            supplier_name: productToEdit.supplier_name || '',
-            purchase_price: productToEdit.purchase_price,
-            sale_price: productToEdit.sale_price,
-            stock: productToEdit.stock,
-            photo_url: productToEdit.photo_url || '',
-            warranty: productToEdit.warranty,
-            categoryIds: catIds // 🔥 Arregla categorías seleccionadas
+          name: productToEdit.name,
+          description: productToEdit.description || '',
+          sku: productToEdit.sku || '',
+          supplier_name: productToEdit.supplier_name || '',
+          purchase_price: productToEdit.purchase_price,
+          sale_price: productToEdit.sale_price,
+          stock: productToEdit.stock,
+          photo_url: productToEdit.photo_url || '',
+          warranty: productToEdit.warranty,
+          categoryIds: catIds
         });
       } else {
-        reset({ stock: 1, warranty: false, supplier_name: '', description: '', categoryIds: [] });
+        // MODO CREAR: Forzamos el reset con el objeto vacío completo
+        reset(emptyState); 
       }
     }
   }, [isOpen, productToEdit, reset]);

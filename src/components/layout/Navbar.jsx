@@ -11,7 +11,8 @@ import UserModal from '../users/UserModal';
 import toast from 'react-hot-toast';
 
 export default function Navbar({ onMenuClick }) {
-  const { user, logout } = useAuth();
+  
+  const { user, logout, updateUserState } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -38,8 +39,8 @@ export default function Navbar({ onMenuClick }) {
 
         const updatedUser = { ...user, ...res.data.updateUser };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(""); 
         
+        updateUserState(res.data.updateUser); 
         toast.success('Perfil actualizado');
         setIsProfileModalOpen(false);
     } catch (e) {
@@ -48,44 +49,53 @@ export default function Navbar({ onMenuClick }) {
   };
 
   // Función de Backup
-  const handleBackup = async () => {
-    setIsDownloading(true);
-    const toastId = toast.loading('Generando respaldo...');
+ const handleBackup = async () => {
+  setIsDownloading(true);
+  const toastId = toast.loading('Generando respaldo...');
 
-    try {
-      const token = localStorage.getItem('token');
-      const API_URL = import.meta.env.VITE_API_URL;
+  try {
+    const token = localStorage.getItem('token');
+    const API_URL = import.meta.env.VITE_API_URL;
 
-      const response = await fetch(`${API_URL}/api/backup`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+    const response = await fetch(`${API_URL}/api/backup`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        // 👇 AÑADE ESTA LÍNEA PARA SALTAR LA ADVERTENCIA DE NGROK
+        'ngrok-skip-browser-warning': 'true' 
+      }
+    });
 
-      if (!response.ok) throw new Error('Error al descargar respaldo');
+    // Si ngrok todavía devuelve algo que no es un archivo (como un error)
+    if (!response.ok) throw new Error('Error al descargar respaldo');
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const date = new Date().toISOString().split('T')[0];
-      a.download = `habana_backup_${date}.sql`;
-      document.body.appendChild(a);
-      a.click();
-      
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success('Respaldo descargado', { id: toastId });
-    } catch (error) {
-      console.error(error);
-      toast.error('No se pudo crear el respaldo', { id: toastId });
-    } finally {
-      setIsDownloading(false);
-      setIsDropdownOpen(false);
+    const blob = await response.blob();
+    
+    // Verificar si lo que recibimos es realmente un SQL o el HTML de error
+    if (blob.type.includes('text/html')) {
+        throw new Error('Ngrok bloqueó la petición. Intenta de nuevo.');
     }
-  };
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const date = new Date().toISOString().split('T')[0];
+    a.download = `habana_backup_${date}.sql`;
+    document.body.appendChild(a);
+    a.click();
+    
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    toast.success('Respaldo descargado', { id: toastId });
+  } catch (error) {
+    console.error(error);
+    toast.error('No se pudo crear el respaldo', { id: toastId });
+  } finally {
+    setIsDownloading(false);
+    setIsDropdownOpen(false);
+  }
+};
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -98,7 +108,7 @@ export default function Navbar({ onMenuClick }) {
   }, []);
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md h-16 flex items-center justify-between px-4 z-20 sticky top-0">
+    <header className="bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md h-16 flex items-center justify-between px-4  z-[100] sticky top-0">
       
       {/* Botón Menú */}
       <div className="flex items-center">
@@ -127,14 +137,16 @@ export default function Navbar({ onMenuClick }) {
                     <User className="text-white h-6 w-6" />
                 )}
             </div>
-            <ChevronDown className="h-4 w-4 text-blue-200" />
+            {/* <ChevronDown className="h-4 w-4 text-blue-200" /> */}
         </button>
 
         {/* Dropdown Menu */}
+        
         <div className={clsx(
             "absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl py-2 transform transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5 z-50",
             isDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
         )}>
+
             {/* Header del Dropdown con Teléfono */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                 <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Cuenta Conectada</p>

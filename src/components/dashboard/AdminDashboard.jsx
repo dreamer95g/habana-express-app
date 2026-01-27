@@ -28,67 +28,54 @@ export default function AdminDashboard() {
   const topSellers = data?.topSellers || [];
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6">
       
-      {/* 1. SECCIÓN GRÁFICOS FINANCIEROS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+       {/* GRÁFICO 1: COSTO VS INVERSIÓN */}
+      <div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <h3 className="text-xs font-black text-gray-400 uppercase mb-6">Inversión vs Ganancia (USD)</h3>
         
-        {/* GRÁFICO 1: COSTO VS GANANCIA (Líneas / Área) */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <DollarSign className="mr-2 text-green-600" size={20}/> Costo VS Inversión {new Date().getFullYear()}
-          </h3>
-          <div className="h-72 w-full">
+        <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorGanancia" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8}/>
+                    <stop offset="5%" stopColor="#16a34a" stopOpacity={0.2}/>
                     <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorInv" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                  </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} tickFormatter={(val) => `$${val/1000}k`} />
-                <Tooltip 
-                    formatter={(value) => formatCurrency(value)}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Legend />
-                <Area type="monotone" dataKey="Inversión" stroke="#ef4444" fillOpacity={1} fill="url(#colorInv)" strokeWidth={2} />
-                <Area type="monotone" dataKey="Ganancia" stroke="#16a34a" fillOpacity={1} fill="url(#colorGanancia)" strokeWidth={2} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
+                <Tooltip contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
+                
+                {/* LÍNEA DE INVERSIÓN: Ahora más visible */}
+                <Area type="monotone" dataKey="Inversión" stroke="#ef4444" strokeWidth={3} fill="transparent" />
+                
+                {/* LÍNEA DE GANANCIA: Con relleno suave */}
+                <Area type="monotone" dataKey="Ganancia" stroke="#16a34a" strokeWidth={3} fillOpacity={1} fill="url(#colorGanancia)" />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
-          <p className="text-xs text-gray-400 text-center mt-2">Comparativa de Costos (Envíos+Mercancía) vs Ganancia Neta Real.</p>
-        </div>
-
-        {/* GRÁFICO 2: ROI % (Barras) */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <TrendingUp className="mr-2 text-blue-600" size={20}/> Retorno de Inversión (ROI)
-          </h3>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#9ca3af'}} unit="%" />
-                <Tooltip 
-                    cursor={{fill: '#f9fafb'}}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Bar dataKey="ROI" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="text-xs text-gray-400 text-center mt-2">Porcentaje de ganancia sobre lo invertido por mes.</p>
         </div>
       </div>
+
+      {/* GRÁFICO 2: ROI (BARRAS CON VALORES) */}
+      <div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <h3 className="text-xs font-black text-gray-400 uppercase mb-6">Porcentaje de Retorno Mensual</h3>
+        <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold'}} unit="%" />
+                <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{ borderRadius: '15px', border: 'none' }} />
+                {/* Mostramos el valor encima de la barra para que no haya que adivinar */}
+                <Bar dataKey="ROI" fill="#3b82f6" radius={[8, 8, 8, 8]} barSize={20} label={{ position: 'top', fontSize: 10, fontWeight: 'bold', fill: '#3b82f6' }} />
+              </BarChart>
+            </ResponsiveContainer>
+        </div>
+      </div>
+
 
       {/* 2. SECCIÓN RANKING DE VENDEDORES (Con Fotos) */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
